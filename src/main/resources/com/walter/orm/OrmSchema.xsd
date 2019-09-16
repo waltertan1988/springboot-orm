@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.waltertan.com/ORMSchema"
+        elementFormDefault="qualified">
+    <element name="orm">
+        <complexType>
+            <sequence maxOccurs="unbounded">
+                <element name="sql">
+                    <complexType>
+                        <simpleContent>
+                            <extension base="string">
+                                <attribute name="id" type="string" use="required"/>
+                                <attribute name="dataSourceRef" type="string" use="optional"/>
+                                <attribute name="parameterType" type="string" use="optional"/>
+                                <attribute name="resultType" type="string" use="optional"/>
+                            </extension>
+                        </simpleContent>
+                    </complexType>
+                </element>
+            </sequence>
+            <attribute name="dataSourceRef" type="string" use="optional"/>
+        </complexType>
+    </element>
+</schema>
