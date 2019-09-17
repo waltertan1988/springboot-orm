@@ -1,4 +1,4 @@
-package com.walter.orm.processor;
+package com.walter.orm.parser;
 
 import com.walter.orm.common.SqlSet;
 import com.walter.orm.throwable.SqlSetException;
@@ -20,9 +20,10 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class XmlOrmProcessor extends AbstractOrmProcessor {
+public class XmlOrmParser extends AbstractOrmParser {
 
-    private final String SQL_SET_XML_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "/**/*-SqlSet.xml";
+    private final String SQLSET_XML_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "/**/*-SqlSet.xml";
+    private final String SQLSET_COMMENT_PATTERN = "<!--.*-->";
 
     @Autowired
     private ConfigurableApplicationContext configurableApplicationContext;
@@ -33,7 +34,7 @@ public class XmlOrmProcessor extends AbstractOrmProcessor {
         Set<SqlSet> resultSqlSets = new HashSet<>();
 
         try {
-            Resource[] resources = configurableApplicationContext.getResources(SQL_SET_XML_PATTERN);
+            Resource[] resources = configurableApplicationContext.getResources(SQLSET_XML_PATTERN);
             for (Resource res : resources) {
                 resultSqlSets.addAll(createSqlSet(res.getFile()));
                 log.info("Created SqlSet from {}...", res.getFilename());
@@ -68,8 +69,8 @@ public class XmlOrmProcessor extends AbstractOrmProcessor {
             if(StringUtils.isBlank(resultType)){
                 resultType = HashMap.class.getName();
             }
-            String sql = sqlElement.getText().replaceAll("<!--.*-->", " ");
-            SqlSet sqlSet = new SqlSet(id, SqlSet.Type.XML, datasourceRef, parameterType, resultType, sql);
+            String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "");
+            SqlSet sqlSet = new SqlSet(id, SqlSet.Type.XML, datasourceRef, parameterType, resultType, statement);
             result.add(sqlSet);
             log.info("SqlSet: {}", sqlSet.toString());
         }

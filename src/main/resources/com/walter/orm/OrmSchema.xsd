@@ -5,7 +5,7 @@
     <element name="orm">
         <complexType>
             <sequence maxOccurs="unbounded">
-                <element name="sql">
+                <element name="statement">
                     <complexType>
                         <simpleContent>
                             <extension base="string">

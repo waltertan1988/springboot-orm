@@ -1,4 +1,4 @@
-package com.walter.orm.processor;
+package com.walter.orm.parser;
 
 import com.walter.orm.common.SqlSet;
 import com.walter.orm.common.SqlSetHolder;
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import java.util.Collection;
 
-public abstract class AbstractOrmProcessor implements BeanPostProcessor {
+public abstract class AbstractOrmParser implements BeanPostProcessor {
 
     protected abstract Collection<SqlSet> parse();
 

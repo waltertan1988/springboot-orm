@@ -13,13 +13,12 @@ public class SqlSet {
     private String dataSourceRef;
     private String parameterType;
     private String resultType;
-    private String sql;
+    private String statement;
 
     @AllArgsConstructor
     public enum Type {
         DB(0),
-        ANNOTATION(1),
-        XML(2);
+        XML(1);
 
         private int code;
     }
