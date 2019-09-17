@@ -6,12 +6,14 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class SqlSet {
     private String id;
     private Type type;
     private String dataSourceRef;
     private String parameterType;
     private String resultType;
+    private String sql;
 
     @AllArgsConstructor
     public enum Type {

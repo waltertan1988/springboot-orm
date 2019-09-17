@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <orm xmlns="http://www.waltertan.com/ORMSchema"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.com/ORMSchema ORMSchema.xsd"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.com/ORMSchema OrmSchema.xsd"
      dataSourceRef="primary">
 
     <sql id="beanId" dataSourceRef="primary" parameterType="" resultType="">
         select * from employee
         where 1=1
         and gender = #{gender}
+        <!--and 1 = 0-->
         and email like ${email}
     </sql>
 </orm>

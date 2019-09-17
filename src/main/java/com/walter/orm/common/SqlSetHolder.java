@@ -1,5 +1,7 @@
 package com.walter.orm.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -7,22 +9,28 @@ public class SqlSetHolder {
 
     private SqlSetHolder(){}
 
-    private static Map<String, SqlSet>[] sqlSetMaps = new ConcurrentHashMap[3];
+    private static List<Map<String, SqlSet>> sqlSetMaps = new ArrayList<>();
+
+    static {
+        for (SqlSet.Type value : SqlSet.Type.values()) {
+            sqlSetMaps.add(new ConcurrentHashMap<>());
+        }
+    }
 
     public static void put(String id, SqlSet sqlSet){
-        sqlSetMaps[sqlSet.getType().ordinal()].put(id, sqlSet);
+        sqlSetMaps.get(sqlSet.getType().ordinal()).put(id, sqlSet);
     }
 
     public static SqlSet get(SqlSet.Type type, String id){
-        return sqlSetMaps[type.ordinal()].get(id);
+        return sqlSetMaps.get(type.ordinal()).get(id);
     }
 
     public static void remove(SqlSet.Type type, String id){
-        sqlSetMaps[type.ordinal()].remove(id);
+        sqlSetMaps.get(type.ordinal()).remove(id);
     }
 
     public static void clear(SqlSet.Type type){
-        sqlSetMaps[type.ordinal()].clear();
+        sqlSetMaps.get(type.ordinal()).clear();
     }
 
     public static void clear() {
@@ -32,7 +40,7 @@ public class SqlSetHolder {
     }
 
     public static Integer size(SqlSet.Type type){
-        return sqlSetMaps[type.ordinal()].size();
+        return sqlSetMaps.get(type.ordinal()).size();
     }
 
     public static Integer size() {
