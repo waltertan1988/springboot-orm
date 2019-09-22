@@ -1,5 +1,6 @@
 package com.walter.orm.parser;
 
+import com.walter.orm.Constants;
 import com.walter.orm.common.SqlSet;
 import com.walter.orm.throwable.SqlSetException;
 import lombok.extern.slf4j.Slf4j;
@@ -52,20 +53,20 @@ public class XmlOrmParser extends AbstractOrmParser {
         Document document = reader.read(xml);
 
         Element ormElement = document.getRootElement();
-        final String DEFAULT_DATA_SOURCE_REF = ormElement.attributeValue(XmlConstants.ATTR_DATA_SOURCE_REF);
+        final String DEFAULT_DATA_SOURCE_REF = ormElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_DATA_SOURCE_REF);
         List<Element> sqlElementList = ormElement.elements();
         for (Element sqlElement : sqlElementList) {
-            String id = sqlElement.attributeValue(XmlConstants.ATTR_ID);
+            String id = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_ID);
             String datasourceRef = DEFAULT_DATA_SOURCE_REF;
-            String sqlElementDatasourceRef = sqlElement.attributeValue(XmlConstants.ATTR_DATA_SOURCE_REF);
+            String sqlElementDatasourceRef = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_DATA_SOURCE_REF);
             if(StringUtils.isNotBlank(sqlElementDatasourceRef)){
                 datasourceRef = sqlElementDatasourceRef;
             }
-            String parameterType = sqlElement.attributeValue(XmlConstants.ATTR_PARAMETER_TYPE);
+            String parameterType = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_PARAMETER_TYPE);
             if(StringUtils.isBlank(parameterType)){
                 parameterType = HashMap.class.getName();
             }
-            String resultType = sqlElement.attributeValue(XmlConstants.ATTR_RESULT_TYPE);
+            String resultType = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_RESULT_TYPE);
             if(StringUtils.isBlank(resultType)){
                 resultType = HashMap.class.getName();
             }
@@ -81,14 +82,5 @@ public class XmlOrmParser extends AbstractOrmParser {
     @Override
     protected SqlSet.Type supportSqlSetType() {
         return SqlSet.Type.XML;
-    }
-
-    class XmlConstants {
-        private XmlConstants(){}
-
-        public static final String ATTR_DATA_SOURCE_REF = "dataSourceRef";
-        public static final String ATTR_ID = "id";
-        public static final String ATTR_PARAMETER_TYPE = "parameterType";
-        public static final String ATTR_RESULT_TYPE = "resultType";
     }
 }
