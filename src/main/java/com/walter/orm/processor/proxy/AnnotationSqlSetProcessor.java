@@ -1,8 +1,11 @@
-package com.walter.orm.processor;
+package com.walter.orm.processor.proxy;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 import com.walter.orm.annotation.SqlSet;
+import com.walter.orm.constant.Constants;
+import com.walter.orm.throwable.SqlSetException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -15,18 +18,20 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 @Slf4j
 @Component
 public class AnnotationSqlSetProcessor implements BeanDefinitionRegistryPostProcessor {
 
-//    @Value("#{'${orm.sqlset.annotation-scan-packages}'.split(',')}")
-    private List<String> scanPackageList = Arrays.asList("com.walter.orm.repository");
+    private Set<String> scanPackages = Sets.newHashSet();
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+        this.loadScanPackages();
+
         this.listSqlSetInterfaces().forEach(interfaceClz -> {
             // 构造SqlSet接口对应的BeanDefinition
             BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(SqlSetInterfaceProxyFactoryBean.class);
@@ -45,16 +50,24 @@ public class AnnotationSqlSetProcessor implements BeanDefinitionRegistryPostProc
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
     }
 
-    private String getDataSourceValue(Class<?> clz){
-        return clz.getAnnotation(SqlSet.class).dataSourceRef();
+    private void loadScanPackages(){
+        try {
+            Properties properties = new Properties();
+            properties.load(this.getClass().getResourceAsStream("/orm.properties"));
+            String pkgs = properties.getProperty(Constants.OrmPropertiesKeyConstants.ORM_SQLSET_ANNOTATION_SCAN_PACKAGES);
+            for (String pkg : StringUtils.deleteWhitespace(pkgs).split(",")) {
+                scanPackages.add(pkg);
+            }
+        } catch (IOException e) {
+            throw new SqlSetException(e);
+        }
     }
 
     private List<Class<?>> listSqlSetInterfaces() {
         List<Class<?>> list = Lists.newArrayList();
-        scanPackageList.stream().map(String::trim).filter(pkg -> StringUtils.isNotBlank(pkg)).forEach(scanPackage -> {
+        scanPackages.stream().map(String::trim).filter(pkg -> StringUtils.isNotBlank(pkg)).forEach(scanPackage -> {
             try {
                 ClassPath classPath = ClassPath.from(this.getClass().getClassLoader());
                 for (ClassPath.ClassInfo classInfo : classPath.getTopLevelClassesRecursive(scanPackage)) {

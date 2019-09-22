@@ -1,6 +1,6 @@
 package com.walter.orm.parser;
 
-import com.walter.orm.Constants;
+import com.walter.orm.constant.Constants;
 import com.walter.orm.common.SqlSet;
 import com.walter.orm.throwable.SqlSetException;
 import lombok.extern.slf4j.Slf4j;

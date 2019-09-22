@@ -1,7 +1,12 @@
-package com.walter.orm;
+package com.walter.orm.constant;
 
 public class Constants {
     private Constants(){}
+
+    public static class OrmPropertiesKeyConstants {
+        private OrmPropertiesKeyConstants(){}
+        public static final String ORM_SQLSET_ANNOTATION_SCAN_PACKAGES = "orm.sqlset.annotation-scan-packages";
+    }
 
     public static class SqlSetAttributeConstants {
         private SqlSetAttributeConstants(){}

@@ -6,7 +6,7 @@ import com.walter.orm.annotation.SqlSetStatement;
 import java.util.Date;
 
 @SqlSet("dataSource")
-public interface Demo1Repository {
+public interface DemoRepository {
     @SqlSetStatement("select now()")
     Date currentDateTime();
 }

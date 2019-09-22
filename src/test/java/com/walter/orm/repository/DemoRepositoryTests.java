@@ -13,15 +13,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class DemoRepositoryTests {
     @Autowired
-    private Demo1Repository demo1Repository;
-    @Autowired
-    private Demo2Repository demo2Repository;
+    private DemoRepository demoRepository;
 
     @Test
     public void testInterfaceDynamicProxy(){
-        Assert.assertNotNull(demo1Repository);
-        Assert.assertNotNull(demo2Repository);
-        demo1Repository.currentDateTime();
-        demo2Repository.testMethod(1000L);
+        Assert.assertNotNull(demoRepository);
+        demoRepository.currentDateTime();
     }
 }

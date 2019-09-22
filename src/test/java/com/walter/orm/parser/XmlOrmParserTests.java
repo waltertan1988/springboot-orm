@@ -19,7 +19,5 @@ public class XmlOrmParserTests {
 		SqlSetHolder.getSqlSetMapList().forEach(map -> {
 			map.values().forEach(sqlSet -> log.info("SqlSet: {}", sqlSet.toString()));
 		});
-
 	}
-
 }

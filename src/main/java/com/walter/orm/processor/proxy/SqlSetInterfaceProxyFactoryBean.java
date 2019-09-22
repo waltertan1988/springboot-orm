@@ -1,8 +1,9 @@
-package com.walter.orm.processor;
+package com.walter.orm.processor.proxy;
 
 import com.walter.orm.annotation.SqlSet;
 import com.walter.orm.annotation.SqlSetStatement;
 import com.walter.orm.throwable.SqlSetException;
+import com.walter.orm.util.FreemarkerUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
@@ -43,20 +44,33 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if(args != null && args.length > 1){
+            throw new SqlSetException("Method args should be Map or POJO");
+        }
+
         SqlSetStatement sqlSetStatement = AnnotationUtils.getAnnotation(method, SqlSetStatement.class);
         String sqlStatement = sqlSetStatement.statement();
         DataSource dataSource = getDataSource(sqlSetStatement);
         if(dataSource == null) {
             throw new SqlSetException("Missing datasource for method ?.?()", targetInterface.getName(), method.getName());
         }
-        return execute(dataSource, sqlStatement, args, method.getReturnType());
+
+        Object param = null;
+        if(args != null){
+            param = args[0];
+        }
+        return execute(dataSource, sqlStatement, param, method.getReturnType());
     }
 
-    private Object execute(DataSource dataSource, String sqlStatement, Object[] args, Class<?> resultClz) throws IllegalAccessException, InstantiationException {
+    private Object execute(DataSource dataSource, String sqlStatement, Object param, Class<?> resultClz) throws IllegalAccessException, InstantiationException {
         log.debug("datasource: {}", dataSource.getClass().getName());
         log.debug("sqlStatement: {}", sqlStatement);
-        log.debug("args: {}", args);
+        log.debug("param: {}", param);
+        log.debug("sql: {}", FreemarkerUtil.parse(sqlStatement, param));
         log.debug("resultClass: {}", resultClz.getName());
+
+        FreemarkerUtil.parse(sqlStatement, param);
+
         Object resultObject = null;
         if(Void.class.equals(resultClz)){
             resultObject = resultClz.newInstance();
