@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface SqlSetStatement {
+public @interface SqlSetSelect {
     @AliasFor("statement")
     String value() default "";
 

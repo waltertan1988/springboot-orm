@@ -53,27 +53,29 @@ public class XmlOrmParser extends AbstractOrmParser {
         Document document = reader.read(xml);
 
         Element ormElement = document.getRootElement();
-        final String DEFAULT_DATA_SOURCE_REF = ormElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_DATA_SOURCE_REF);
+        final String DEFAULT_DATA_SOURCE_REF = ormElement.attributeValue(Constants.SqlSet.Attribute.DATA_SOURCE_REF);
         List<Element> sqlElementList = ormElement.elements();
         for (Element sqlElement : sqlElementList) {
-            String id = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_ID);
-            String datasourceRef = DEFAULT_DATA_SOURCE_REF;
-            String sqlElementDatasourceRef = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_DATA_SOURCE_REF);
-            if(StringUtils.isNotBlank(sqlElementDatasourceRef)){
-                datasourceRef = sqlElementDatasourceRef;
+            if(sqlElement.getName().equals(Constants.SqlSet.Statement.SELECT)){
+                String id = sqlElement.attributeValue(Constants.SqlSet.Attribute.ID);
+                String datasourceRef = DEFAULT_DATA_SOURCE_REF;
+                String sqlElementDatasourceRef = sqlElement.attributeValue(Constants.SqlSet.Attribute.DATA_SOURCE_REF);
+                if(StringUtils.isNotBlank(sqlElementDatasourceRef)){
+                    datasourceRef = sqlElementDatasourceRef;
+                }
+                String parameterType = sqlElement.attributeValue(Constants.SqlSet.Attribute.PARAMETER_TYPE);
+                if(StringUtils.isBlank(parameterType)){
+                    parameterType = HashMap.class.getName();
+                }
+                String resultType = sqlElement.attributeValue(Constants.SqlSet.Attribute.RESULT_TYPE);
+                if(StringUtils.isBlank(resultType)){
+                    resultType = HashMap.class.getName();
+                }
+                String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "");
+                SqlSet sqlSet = new SqlSet(id, SqlSet.Type.XML, datasourceRef, parameterType, resultType, statement);
+                result.add(sqlSet);
+                log.info("SqlSet: {}", sqlSet.toString());
             }
-            String parameterType = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_PARAMETER_TYPE);
-            if(StringUtils.isBlank(parameterType)){
-                parameterType = HashMap.class.getName();
-            }
-            String resultType = sqlElement.attributeValue(Constants.SqlSetAttributeConstants.ATTR_RESULT_TYPE);
-            if(StringUtils.isBlank(resultType)){
-                resultType = HashMap.class.getName();
-            }
-            String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "");
-            SqlSet sqlSet = new SqlSet(id, SqlSet.Type.XML, datasourceRef, parameterType, resultType, statement);
-            result.add(sqlSet);
-            log.info("SqlSet: {}", sqlSet.toString());
         }
 
         return result;

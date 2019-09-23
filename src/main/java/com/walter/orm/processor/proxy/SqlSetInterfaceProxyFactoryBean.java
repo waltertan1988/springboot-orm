@@ -1,7 +1,7 @@
 package com.walter.orm.processor.proxy;
 
 import com.walter.orm.annotation.SqlSet;
-import com.walter.orm.annotation.SqlSetStatement;
+import com.walter.orm.annotation.SqlSetSelect;
 import com.walter.orm.throwable.SqlSetException;
 import com.walter.orm.util.FreemarkerUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +11,18 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import javax.sql.DataSource;
 import java.lang.annotation.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 
 @Slf4j
 public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationHandler, ApplicationContextAware {
@@ -48,9 +54,9 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
             throw new SqlSetException("Method args should be Map or POJO");
         }
 
-        SqlSetStatement sqlSetStatement = AnnotationUtils.getAnnotation(method, SqlSetStatement.class);
-        String sqlStatement = sqlSetStatement.statement();
-        DataSource dataSource = getDataSource(sqlSetStatement);
+        SqlSetSelect sqlSetSelect = AnnotationUtils.getAnnotation(method, SqlSetSelect.class);
+        String sqlStatement = sqlSetSelect.statement();
+        DataSource dataSource = getDataSource(sqlSetSelect);
         if(dataSource == null) {
             throw new SqlSetException("Missing datasource for method ?.?()", targetInterface.getName(), method.getName());
         }
@@ -63,13 +69,29 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
     }
 
     private Object execute(DataSource dataSource, String sqlStatement, Object param, Class<?> resultClz) throws IllegalAccessException, InstantiationException {
+
+        String preparedSqlStatement = FreemarkerUtil.parse(sqlStatement, param);
+
         log.debug("datasource: {}", dataSource.getClass().getName());
         log.debug("sqlStatement: {}", sqlStatement);
         log.debug("param: {}", param);
-        log.debug("sql: {}", FreemarkerUtil.parse(sqlStatement, param));
+        log.debug("sql: {}", preparedSqlStatement);
         log.debug("resultClass: {}", resultClz.getName());
 
-        FreemarkerUtil.parse(sqlStatement, param);
+
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
+        SqlParameterSource sqlParameterSource = null;
+        if(param instanceof Map){
+            sqlParameterSource = new MapSqlParameterSource((Map)param);
+        }else if(null != param) {
+            sqlParameterSource = new BeanPropertySqlParameterSource(param);
+        }
+
+        namedParameterJdbcTemplate.queryForList(preparedSqlStatement, sqlParameterSource, resultClz);
+
+//        Object result = namedParameterJdbcTemplate.execute(preparedSqlStatement, sqlParameterSource, ps -> {
+//            return null;
+//        });
 
         Object resultObject = null;
         if(Void.class.equals(resultClz)){
@@ -78,8 +100,8 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
         return resultObject;
     }
 
-    private DataSource getDataSource(SqlSetStatement sqlSetStatement){
-        String dsName = sqlSetStatement.dataSourceRef();
+    private DataSource getDataSource(SqlSetSelect sqlSetSelect){
+        String dsName = sqlSetSelect.dataSourceRef();
         dsName = (StringUtils.isNotBlank(dsName) ? dsName : AnnotationUtils.getAnnotation(targetInterface, SqlSet.class).dataSourceRef());
         DataSource dataSource = applicationContext.getBean(dsName, DataSource.class);
         return dataSource;

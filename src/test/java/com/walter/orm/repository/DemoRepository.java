@@ -1,12 +1,12 @@
 package com.walter.orm.repository;
 
 import com.walter.orm.annotation.SqlSet;
-import com.walter.orm.annotation.SqlSetStatement;
+import com.walter.orm.annotation.SqlSetSelect;
 
 import java.util.Date;
 
 @SqlSet("dataSource")
 public interface DemoRepository {
-    @SqlSetStatement("select now()")
+    @SqlSetSelect("select now()")
     Date currentDateTime();
 }

@@ -56,7 +56,7 @@ public class AnnotationSqlSetProcessor implements BeanDefinitionRegistryPostProc
         try {
             Properties properties = new Properties();
             properties.load(this.getClass().getResourceAsStream("/orm.properties"));
-            String pkgs = properties.getProperty(Constants.OrmPropertiesKeyConstants.ORM_SQLSET_ANNOTATION_SCAN_PACKAGES);
+            String pkgs = properties.getProperty(Constants.OrmPropertiesKey.ORM_SQLSET_ANNOTATION_SCAN_PACKAGES);
             for (String pkg : StringUtils.deleteWhitespace(pkgs).split(",")) {
                 scanPackages.add(pkg);
             }

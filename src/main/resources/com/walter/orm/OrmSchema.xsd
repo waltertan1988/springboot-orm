@@ -5,7 +5,7 @@
     <element name="orm">
         <complexType>
             <sequence maxOccurs="unbounded">
-                <element name="statement">
+                <element name="select" minOccurs="0">
                     <complexType>
                         <simpleContent>
                             <extension base="string">
@@ -17,6 +17,18 @@
                         </simpleContent>
                     </complexType>
                 </element>
+<!--                <element name="modify" minOccurs="0">-->
+<!--                    <complexType>-->
+<!--                        <simpleContent>-->
+<!--                            <extension base="string">-->
+<!--                                <attribute name="id" type="string" use="required"/>-->
+<!--                                <attribute name="dataSourceRef" type="string" use="optional"/>-->
+<!--                                <attribute name="parameterType" type="string" use="optional"/>-->
+<!--                                <attribute name="resultType" type="string" use="optional"/>-->
+<!--                            </extension>-->
+<!--                        </simpleContent>-->
+<!--                    </complexType>-->
+<!--                </element>-->
             </sequence>
             <attribute name="dataSourceRef" type="string" use="optional"/>
         </complexType>

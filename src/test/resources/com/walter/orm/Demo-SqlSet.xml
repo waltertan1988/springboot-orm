@@ -3,7 +3,7 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.com/ORMSchema OrmSchema.xsd"
      dataSourceRef="primary">
 
-    <statement id="beanId" dataSourceRef="primary" parameterType="" resultType="">
+    <select id="beanId" dataSourceRef="primary" parameterType="" resultType="">
         <![CDATA[
             select * from employee
             where 1=1
@@ -15,5 +15,5 @@
                 and email like '${email}'
             </#if>
         ]]>
-    </statement>
+    </select>
 </orm>

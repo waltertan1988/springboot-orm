@@ -13,7 +13,7 @@ public class SqlSet {
     private String dataSourceRef;
     private String parameterType;
     private String resultType;
-    private String statement;
+    private String selectStatement;
 
     @AllArgsConstructor
     public enum Type {
