@@ -11,6 +11,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,10 +20,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import javax.sql.DataSource;
 import java.lang.annotation.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -77,15 +81,9 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
     }
 
     private Object execute(DataSource dataSource, String sqlStatement, Object param, Class<?> returnType, Class<?> multiReturnElementType) throws IllegalAccessException, InstantiationException {
-
         String preparedSqlStatement = FreemarkerUtil.parse(sqlStatement, param);
-
-        log.debug("datasource: {}", dataSource.getClass().getName());
-        log.debug("sqlStatement: {}", sqlStatement);
-        log.debug("param: {}", param);
         log.debug("sql: {}", preparedSqlStatement);
-        log.debug("returnType: {}", returnType.getName());
-        log.debug("multiReturnElementType: {}", multiReturnElementType == null? null : multiReturnElementType.getName());
+        log.debug("param: {}", param);
 
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
         SqlParameterSource sqlParameterSource = null;
@@ -95,17 +93,34 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
             sqlParameterSource = new BeanPropertySqlParameterSource(param);
         }
 
-//        namedParameterJdbcTemplate.queryForList(preparedSqlStatement, sqlParameterSource, resultClz);
-
-//        Object result = namedParameterJdbcTemplate.execute(preparedSqlStatement, sqlParameterSource, ps -> {
-//            return null;
-//        });
-
-        Object resultObject = null;
         if(Void.class.equals(returnType)){
-            resultObject = returnType.newInstance();
+            return Void.class.newInstance();
+        }else if(Collection.class.isAssignableFrom(returnType)) {
+            List<Map<String, Object>> mapList = namedParameterJdbcTemplate.queryForList(preparedSqlStatement, sqlParameterSource);
+            if(Map.class.isAssignableFrom(multiReturnElementType)){
+                return mapList;
+            }else{
+                List<Object> resultList = new ArrayList<>(mapList.size());
+                for (Map<String, Object> map : mapList) {
+                    Object element = multiReturnElementType.newInstance();
+                    for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        for (Field field : Object.class.getFields()) {
+                            if(field.getName().equals(entry.getKey())){
+                                field.setAccessible(true);
+                                field.set(element, entry.getValue());
+                            }
+                        }
+                    }
+                    resultList.add(element);
+                }
+                return mapList;
+            }
+        }else if(Map.class.isAssignableFrom(returnType)){
+            return namedParameterJdbcTemplate.queryForMap(preparedSqlStatement, sqlParameterSource);
+        }else{
+            return namedParameterJdbcTemplate.queryForObject(preparedSqlStatement, sqlParameterSource,
+                    BeanPropertyRowMapper.newInstance(returnType));
         }
-        return resultObject;
     }
 
     private DataSource getDataSource(SqlSetSelect sqlSetSelect){

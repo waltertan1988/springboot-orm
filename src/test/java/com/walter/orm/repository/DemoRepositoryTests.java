@@ -16,8 +16,12 @@ public class DemoRepositoryTests {
     private DemoRepository demoRepository;
 
     @Test
-    public void testInterfaceDynamicProxy(){
+    public void testDynamicProxy(){
         Assert.assertNotNull(demoRepository);
+    }
+
+    @Test
+    public void testInterfaceDynamicProxy(){
         demoRepository.currentDateTime();
     }
 }

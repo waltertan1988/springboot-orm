@@ -8,17 +8,27 @@ import java.util.Map;
 
 @SqlSet
 public interface Demo1Repository {
-    @SqlSetSelect(value = "select 1 from department where 1=1" +
-            "<#if id??> and id = ${id}</#if>" +
+    @SqlSetSelect(value = "select * from department where 1=1" +
             "<#if name??> and name like '%${name}%'</#if>" +
-            "<#if code??> and code = :code</#if>",
+            "<#if code??> and code like :code</#if>",
             dataSourceRef = "dataSource")
-    void testMapParam(Map<String, Object> params);
+    List<?> listMapByObject(Object param);
 
     @SqlSetSelect(value = "select * from department where 1=1" +
-            "<#if id??> and id = ${id}</#if>" +
             "<#if name??> and name like '%${name}%'</#if>" +
-            "<#if code??> and code = :code</#if>",
+            "<#if code??> and code like :code</#if>",
+            dataSourceRef = "dataSource", multiReturnElementType = Demo1Domain.class)
+    List<?> listObjectByMap(Map<String, Object> params);
+
+    @SqlSetSelect(value = "select * from department where 1=1" +
+            "<#if id??> and id = :id</#if>" +
+            "<#if code??> and code = '${code}'</#if>",
             dataSourceRef = "dataSource")
-    List<?> testObjectParam(Object params);
+    Demo1Domain getObjectByObject(Demo1Domain param);
+
+    @SqlSetSelect(value = "select * from department where 1=1" +
+            "<#if id??> and id = :id</#if>" +
+            "<#if code??> and code = '${code}'</#if>",
+            dataSourceRef = "dataSource")
+    Demo1Domain getObjectByMap(Map<String, Object> params);
 }
