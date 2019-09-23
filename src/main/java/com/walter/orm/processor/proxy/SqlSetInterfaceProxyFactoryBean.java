@@ -22,6 +22,7 @@ import java.lang.annotation.*;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
 import java.util.Map;
 
 @Slf4j
@@ -61,14 +62,21 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
             throw new SqlSetException("Missing datasource for method ?.?()", targetInterface.getName(), method.getName());
         }
 
+        Class<?> returnType = method.getReturnType();
+
+        Class<?> multiReturnElementType = null;
+        if(Collection.class.isAssignableFrom(returnType)){
+            multiReturnElementType = sqlSetSelect.multiReturnElementType();
+        }
+
         Object param = null;
         if(args != null){
             param = args[0];
         }
-        return execute(dataSource, sqlStatement, param, method.getReturnType());
+        return execute(dataSource, sqlStatement, param, returnType, multiReturnElementType);
     }
 
-    private Object execute(DataSource dataSource, String sqlStatement, Object param, Class<?> resultClz) throws IllegalAccessException, InstantiationException {
+    private Object execute(DataSource dataSource, String sqlStatement, Object param, Class<?> returnType, Class<?> multiReturnElementType) throws IllegalAccessException, InstantiationException {
 
         String preparedSqlStatement = FreemarkerUtil.parse(sqlStatement, param);
 
@@ -76,7 +84,8 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
         log.debug("sqlStatement: {}", sqlStatement);
         log.debug("param: {}", param);
         log.debug("sql: {}", preparedSqlStatement);
-        log.debug("resultClass: {}", resultClz.getName());
+        log.debug("returnType: {}", returnType.getName());
+        log.debug("multiReturnElementType: {}", multiReturnElementType == null? null : multiReturnElementType.getName());
 
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
         SqlParameterSource sqlParameterSource = null;
@@ -93,8 +102,8 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
 //        });
 
         Object resultObject = null;
-        if(Void.class.equals(resultClz)){
-            resultObject = resultClz.newInstance();
+        if(Void.class.equals(returnType)){
+            resultObject = returnType.newInstance();
         }
         return resultObject;
     }

@@ -3,6 +3,7 @@ package com.walter.orm.annotation;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
+import java.util.Map;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -14,6 +15,8 @@ public @interface SqlSetSelect {
 
     @AliasFor("value")
     String statement() default "";
+
+    Class<?> multiReturnElementType() default Map.class;
 
     String dataSourceRef() default "";
 }
