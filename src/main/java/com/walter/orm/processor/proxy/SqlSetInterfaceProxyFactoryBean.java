@@ -78,16 +78,15 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
         log.debug("sql: {}", preparedSqlStatement);
         log.debug("resultClass: {}", resultClz.getName());
 
-
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
         SqlParameterSource sqlParameterSource = null;
-        if(param instanceof Map){
+        if(param instanceof Map) {
             sqlParameterSource = new MapSqlParameterSource((Map)param);
         }else if(null != param) {
             sqlParameterSource = new BeanPropertySqlParameterSource(param);
         }
 
-        namedParameterJdbcTemplate.queryForList(preparedSqlStatement, sqlParameterSource, resultClz);
+//        namedParameterJdbcTemplate.queryForList(preparedSqlStatement, sqlParameterSource, resultClz);
 
 //        Object result = namedParameterJdbcTemplate.execute(preparedSqlStatement, sqlParameterSource, ps -> {
 //            return null;

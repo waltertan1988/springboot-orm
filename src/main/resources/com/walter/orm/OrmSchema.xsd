@@ -13,6 +13,7 @@
                                 <attribute name="dataSourceRef" type="string" use="optional"/>
                                 <attribute name="parameterType" type="string" use="optional"/>
                                 <attribute name="resultType" type="string" use="optional"/>
+                                <attribute name="multiResult" type="boolean" use="optional"/>
                             </extension>
                         </simpleContent>
                     </complexType>

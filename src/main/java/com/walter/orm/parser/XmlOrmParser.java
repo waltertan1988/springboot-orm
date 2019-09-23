@@ -71,8 +71,13 @@ public class XmlOrmParser extends AbstractOrmParser {
                 if(StringUtils.isBlank(resultType)){
                     resultType = HashMap.class.getName();
                 }
+                String _multiResult = sqlElement.attributeValue(Constants.SqlSet.Attribute.MULTI_RESULT);
+                Boolean multiResult = true;
+                if(StringUtils.isNotBlank(_multiResult)){
+                    multiResult = Boolean.valueOf(_multiResult);
+                }
                 String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "");
-                SqlSet sqlSet = new SqlSet(id, SqlSet.Type.XML, datasourceRef, parameterType, resultType, statement);
+                SqlSet sqlSet = new SqlSet(id, SqlSet.Type.XML, datasourceRef, parameterType, resultType, multiResult, statement);
                 result.add(sqlSet);
                 log.info("SqlSet: {}", sqlSet.toString());
             }

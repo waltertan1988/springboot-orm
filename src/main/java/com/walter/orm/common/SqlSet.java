@@ -13,6 +13,7 @@ public class SqlSet {
     private String dataSourceRef;
     private String parameterType;
     private String resultType;
+    private Boolean multiResult;
     private String selectStatement;
 
     @AllArgsConstructor

@@ -18,6 +18,7 @@ public class Constants {
             public static final String ID = "id";
             public static final String PARAMETER_TYPE = "parameterType";
             public static final String RESULT_TYPE = "resultType";
+            public static final String MULTI_RESULT = "multiResult";
         }
     }
 }
