@@ -1,7 +1,14 @@
 package com.walter.orm.processor.sql;
 
+import com.walter.orm.annotation.Select;
+import com.walter.orm.annotation.SqlSet;
+import com.walter.orm.throwable.SqlSetException;
+import com.walter.orm.util.FreemarkerUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -12,28 +19,61 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@Primary
 @Component
-public class NamedParameterSqlProcessor extends AbstractSqlProcessor {
+public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlProcessor {
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
-    public Object process(DataSource dataSource, String preparedSqlStatement, Object param, Class<?> returnType, Class<?> multiReturnElementType) throws IllegalAccessException, InstantiationException {
+    public Object process(Class<?> targetInterface, Object proxy, Method method, Object[] args) throws Exception {
+        if(args != null && args.length > 1){
+            throw new SqlSetException("Method arg should be Void, Map or POJO");
+        }
+
+        Select select = AnnotationUtils.getAnnotation(method, Select.class);
+        String sqlStatement = select.statement();
+        DataSource dataSource = getDataSource(targetInterface, select);
+        if(dataSource == null) {
+            throw new SqlSetException("Missing datasource for method ?.?()", targetInterface.getName(), method.getName());
+        }
+
+        Class<?> returnType = method.getReturnType();
+
+        Class<?> multiReturnElementType = null;
+        if(Collection.class.isAssignableFrom(returnType)){
+            multiReturnElementType = select.multiReturnElementType();
+        }
+
+        Object param = null;
+        if(args != null){
+            param = args[0];
+        }
+
+        String preparedSqlStatement = FreemarkerUtil.parse(sqlStatement, param);
+
+        return doSelect(dataSource, preparedSqlStatement, param, returnType, multiReturnElementType);
+    }
+
+    private Object doSelect(DataSource dataSource, String preparedSqlStatement, Object param, Class<?> returnType,
+                            Class<?> multiReturnElementType) throws IllegalAccessException, InstantiationException, NoSuchFieldException {
         log.debug("sql: {}", preparedSqlStatement);
         log.debug("param: {}", param);
 
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
         SqlParameterSource sqlParameterSource = null;
         if(param instanceof Map) {
             sqlParameterSource = new MapSqlParameterSource((Map)param);
         }else if(null != param) {
             sqlParameterSource = new BeanPropertySqlParameterSource(param);
         }
+
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
 
         if(Void.class.equals(returnType)){
             return Void.class.newInstance();
@@ -50,6 +90,7 @@ public class NamedParameterSqlProcessor extends AbstractSqlProcessor {
                             if(field.getName().equals(entry.getKey())){
                                 field.setAccessible(true);
                                 field.set(element, entry.getValue());
+                                break;
                             }
                         }
                     }
@@ -65,5 +106,17 @@ public class NamedParameterSqlProcessor extends AbstractSqlProcessor {
         }else {
             return namedParameterJdbcTemplate.queryForObject(preparedSqlStatement, sqlParameterSource, returnType);
         }
+    }
+
+    private DataSource getDataSource(Class<?> targetInterface, Select select){
+        String dsName = select.dataSourceRef();
+        dsName = (StringUtils.isNotBlank(dsName) ? dsName : AnnotationUtils.getAnnotation(targetInterface, SqlSet.class).dataSourceRef());
+        DataSource dataSource = applicationContext.getBean(dsName, DataSource.class);
+        return dataSource;
+    }
+
+    @Override
+    public Boolean support(Method method) {
+        return method.isAnnotationPresent(Select.class);
     }
 }

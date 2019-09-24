@@ -9,7 +9,7 @@ import java.util.Map;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface SqlSetSelect {
+public @interface Select {
     @AliasFor("statement")
     String value() default "";
 
