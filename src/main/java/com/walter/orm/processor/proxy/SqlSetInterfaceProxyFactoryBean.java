@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
 import java.lang.annotation.*;
@@ -117,10 +118,17 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
             }
         }else if(Map.class.isAssignableFrom(returnType)){
             return namedParameterJdbcTemplate.queryForMap(preparedSqlStatement, sqlParameterSource);
-        }else{
+        }else if(isCustomClass(returnType)){
             return namedParameterJdbcTemplate.queryForObject(preparedSqlStatement, sqlParameterSource,
                     BeanPropertyRowMapper.newInstance(returnType));
+        }else {
+            return namedParameterJdbcTemplate.queryForObject(preparedSqlStatement, sqlParameterSource, returnType);
         }
+    }
+
+    private boolean isCustomClass(Class<?> clz){
+        Assert.notNull(clz, "input object cannot be null");
+        return clz.getClassLoader() != null;
     }
 
     private DataSource getDataSource(SqlSetSelect sqlSetSelect){

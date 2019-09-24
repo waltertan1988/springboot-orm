@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.walter.orm</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>springboot-orm-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>springboot-orm-demo</name>
+	<description>ORM Demo project for Spring Boot</description>
 
 	<properties>
 		<java.version>1.8</java.version>
