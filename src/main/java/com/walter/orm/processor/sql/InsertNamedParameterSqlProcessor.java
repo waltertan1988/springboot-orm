@@ -65,7 +65,7 @@ public class InsertNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
         int count = namedParameterJdbcTemplate.update(preparedSqlStatement, sqlParameterSource, keyHolder);
         long keyValue = keyHolder.getKey().longValue();
 
-        if(count > 0){
+        if(count > 0 && StringUtils.isNotBlank(keyField)){
             if(param instanceof Map){
                 ((Map) param).put(keyField, keyValue);
             }else{
