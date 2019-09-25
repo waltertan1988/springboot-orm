@@ -69,7 +69,7 @@ public class InsertNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
             if(param instanceof Map){
                 ((Map) param).put(keyField, keyValue);
             }else{
-                Field field = param.getClass().getField(keyField);
+                Field field = param.getClass().getDeclaredField(keyField);
                 field.setAccessible(true);
                 field.set(param, keyValue);
             }

@@ -57,8 +57,8 @@ public class Demo1RepositoryTests {
     public void testSaveObject(){
         Demo1Domain domain = new Demo1Domain(null, UUID.randomUUID().toString(),"财务部");
         long result = demo1Repository.saveObject(domain);
-        log.debug(String.valueOf(result));
-        Assert.assertTrue(1 == result && domain.getId() > 0);
+        Assert.assertTrue(1 == result);
+        log.debug(domain.toString());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class Demo1RepositoryTests {
         params.put("code", UUID.randomUUID().toString());
         params.put("name", "财务部");
         long result = demo1Repository.saveMap(params);
-        log.debug("id: {}", params.get("id"));
-        Assert.assertTrue(1 == result && null != params.get("id"));
+        Assert.assertTrue(1 == result);
+        log.debug(params.toString());
     }
 }

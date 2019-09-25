@@ -86,13 +86,9 @@ public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
                 for (Map<String, Object> map : mapList) {
                     Object element = multiReturnElementType.newInstance();
                     for (Map.Entry<String, Object> entry : map.entrySet()) {
-                        for (Field field : Object.class.getFields()) {
-                            if(field.getName().equals(entry.getKey())){
-                                field.setAccessible(true);
-                                field.set(element, entry.getValue());
-                                break;
-                            }
-                        }
+                        Field field = multiReturnElementType.getDeclaredField(entry.getKey());
+                        field.setAccessible(true);
+                        field.set(element, entry.getValue());
                     }
                     resultList.add(element);
                 }
