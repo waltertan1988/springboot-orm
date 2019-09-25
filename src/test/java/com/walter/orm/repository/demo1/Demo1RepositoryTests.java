@@ -56,8 +56,8 @@ public class Demo1RepositoryTests {
     @Test
     public void testSaveObject(){
         Demo1Domain domain = new Demo1Domain(null, UUID.randomUUID().toString(),"财务部");
-        long result = demo1Repository.saveObject(domain);
-        Assert.assertTrue(1 == result);
+        long count = demo1Repository.saveObject(domain);
+        Assert.assertTrue(1 == count);
         log.debug(domain.toString());
     }
 
@@ -65,9 +65,23 @@ public class Demo1RepositoryTests {
     public void testSaveMap(){
         Map<String, Object> params = new HashMap<>();
         params.put("code", UUID.randomUUID().toString());
-        params.put("name", "财务部");
-        long result = demo1Repository.saveMap(params);
-        Assert.assertTrue(1 == result);
+        params.put("name", "业务部");
+        long count = demo1Repository.saveMap(params);
+        Assert.assertTrue(1 == count);
         log.debug(params.toString());
+    }
+
+    @Test
+    public void testDeleteByObject(){
+        Demo1Domain domain = new Demo1Domain(null, null,"业务部");
+        demo1Repository.deleteByObject(domain);
+    }
+
+    @Test
+    public void testDeleteByMap(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", 2L);
+        long result = demo1Repository.deleteByMap(params);
+        log.debug("count: {}", result);
     }
 }

@@ -1,5 +1,6 @@
 package com.walter.orm.repository.demo1;
 
+import com.walter.orm.annotation.Delete;
 import com.walter.orm.annotation.SqlSet;
 import com.walter.orm.annotation.Insert;
 import com.walter.orm.annotation.Select;
@@ -38,4 +39,10 @@ public interface Demo1Repository {
 
     @Insert(value = "insert into department(code, name) values (:code, :name)", keyField = "id", dataSourceRef = "dataSource")
     int saveMap(Map<String, Object> map);
+
+    @Delete(value = "delete from department where name like '%${name}%'", dataSourceRef = "dataSource")
+    void deleteByObject(Demo1Domain demo1Domain);
+
+    @Delete(value = "delete from department where id > :id", dataSourceRef = "dataSource")
+    int deleteByMap(Map<String, Object> map);
 }
