@@ -1,9 +1,6 @@
 package com.walter.orm.repository.demo1;
 
-import com.walter.orm.annotation.Delete;
-import com.walter.orm.annotation.SqlSet;
-import com.walter.orm.annotation.Insert;
-import com.walter.orm.annotation.Select;
+import com.walter.orm.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -45,4 +42,11 @@ public interface Demo1Repository {
 
     @Delete(value = "delete from department where id > :id", dataSourceRef = "dataSource")
     int deleteByMap(Map<String, Object> map);
+
+    @Update(value = "update department set code = :code where code = :_code", dataSourceRef = "dataSource")
+    int updateObjectByObject(Demo1Domain newDomain, @Param Demo1Domain param);
+
+    @Update(value = "update department set name = :name where name <#if _name?? && _name == '_NULL'>is null<#else>=:_name</#if>"
+            , dataSourceRef = "dataSource")
+    int updateObjectByObjectWithNull(Demo1Domain newDomain, @Param Demo1Domain param);
 }

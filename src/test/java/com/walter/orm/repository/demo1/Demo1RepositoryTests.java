@@ -84,4 +84,20 @@ public class Demo1RepositoryTests {
         long result = demo1Repository.deleteByMap(params);
         log.debug("count: {}", result);
     }
+
+    @Test
+    public void testUpdateObjectByObject(){
+        Demo1Domain entity = new Demo1Domain(null, "D0003", null);
+        Demo1Domain param = new Demo1Domain(null, "D0004", null);
+        long result = demo1Repository.updateObjectByObject(entity, param);
+        log.debug("count: {}", result);
+    }
+
+    @Test
+    public void testUpdateObjectByObjectWithNull(){
+        Demo1Domain entity = new Demo1Domain(null, null, "XXX");
+        Demo1Domain param = new Demo1Domain(null, null, "_NULL");
+        long result = demo1Repository.updateObjectByObjectWithNull(entity, param);
+        log.debug("count: {}", result);
+    }
 }
