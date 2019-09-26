@@ -4,6 +4,7 @@ import com.walter.orm.annotation.Delete;
 import com.walter.orm.annotation.SqlSet;
 import com.walter.orm.throwable.SqlSetException;
 import com.walter.orm.util.FreemarkerUtil;
+import com.walter.orm.util.ReflectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class DeleteNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
 
     @Override
     public Object process(Class<?> targetInterface, Object proxy, Method method, Object[] args) {
-        if(args != null && args.length != 1 && !(args[0] instanceof Map) && !isCustomClass(args[0].getClass())){
+        if(args != null && args.length != 1 && !(args[0] instanceof Map) && !ReflectionUtil.isCustomClass(args[0].getClass())){
             throw new SqlSetException("Method arg should be Map or POJO");
         }
 

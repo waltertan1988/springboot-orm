@@ -4,6 +4,7 @@ import com.walter.orm.annotation.Select;
 import com.walter.orm.annotation.SqlSet;
 import com.walter.orm.throwable.SqlSetException;
 import com.walter.orm.util.FreemarkerUtil;
+import com.walter.orm.util.ReflectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,7 +97,7 @@ public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
             }
         }else if(Map.class.isAssignableFrom(returnType)){
             return namedParameterJdbcTemplate.queryForMap(preparedSqlStatement, sqlParameterSource);
-        }else if(isCustomClass(returnType)){
+        }else if(ReflectionUtil.isCustomClass(returnType)){
             return namedParameterJdbcTemplate.queryForObject(preparedSqlStatement, sqlParameterSource,
                     BeanPropertyRowMapper.newInstance(returnType));
         }else {
