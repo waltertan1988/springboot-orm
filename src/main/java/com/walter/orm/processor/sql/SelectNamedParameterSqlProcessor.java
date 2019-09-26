@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -87,9 +86,7 @@ public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
                 for (Map<String, Object> map : mapList) {
                     Object element = multiReturnElementType.newInstance();
                     for (Map.Entry<String, Object> entry : map.entrySet()) {
-                        Field field = multiReturnElementType.getDeclaredField(entry.getKey());
-                        field.setAccessible(true);
-                        field.set(element, entry.getValue());
+                        ReflectionUtil.setBeanProperty(element, ReflectionUtil.toLowerCamel(entry.getKey()), entry.getValue());
                     }
                     resultList.add(element);
                 }

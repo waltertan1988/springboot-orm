@@ -10,11 +10,26 @@ import java.lang.reflect.InvocationTargetException;
 public class ReflectionUtil {
     private ReflectionUtil(){}
 
-    public static String underScoreStringToLowerCamelString(String underScoreString){
-        if(underScoreString.indexOf("_") == -1){
-            throw new RuntimeException();
+    public static String toLowerCamel(String string){
+        if(null == string || (hasUnderScore(string) && hasHyphen(string))){
+            throw new RuntimeException("input put string is null or with error format");
+        }else if(hasUnderScore(string)){
+            return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, string.toLowerCase());
+        }else if(hasHyphen(string)){
+            return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, string.toLowerCase());
+        }else if(Character.isUpperCase(string.charAt(0))){
+            return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, string);
+        }else{
+            return string;
         }
-        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, underScoreString.toLowerCase());
+    }
+
+    public static boolean hasUnderScore(String content){
+        return content.indexOf("_") > -1;
+    }
+
+    public static boolean hasHyphen(String content){
+        return content.indexOf("-") > -1;
     }
 
     public static Boolean isCustomClass(Class<?> clz){
