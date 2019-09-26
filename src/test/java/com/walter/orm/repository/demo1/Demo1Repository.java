@@ -46,7 +46,9 @@ public interface Demo1Repository {
     @Update(value = "update department set code = :code where code = :_code", dataSourceRef = "dataSource")
     int updateObjectByObject(Demo1Domain newDomain, @Param Demo1Domain param);
 
-    @Update(value = "update department set name = :name where name <#if _name?? && _name == '_NULL'>is null<#else>=:_name</#if>"
+    @Update(value = "update department set " +
+            "name = <#if name == '_NULL'>null<#else>:name</#if> " +
+            "where name <#if _name?? && _name == '_NULL'>is null<#else>=:_name</#if>"
             , dataSourceRef = "dataSource")
     int updateObjectByObjectWithNull(Demo1Domain newDomain, @Param Demo1Domain param);
 }

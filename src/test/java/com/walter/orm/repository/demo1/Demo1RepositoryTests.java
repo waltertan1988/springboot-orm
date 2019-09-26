@@ -100,4 +100,12 @@ public class Demo1RepositoryTests {
         long result = demo1Repository.updateObjectByObjectWithNull(entity, param);
         log.debug("count: {}", result);
     }
+
+    @Test
+    public void testUpdateObjectByObjectWithNotNull(){
+        Demo1Domain entity = new Demo1Domain(null, null, "_NULL");
+        Demo1Domain param = new Demo1Domain(null, null, "XXX");
+        long result = demo1Repository.updateObjectByObjectWithNull(entity, param);
+        log.debug("count: {}", result);
+    }
 }
