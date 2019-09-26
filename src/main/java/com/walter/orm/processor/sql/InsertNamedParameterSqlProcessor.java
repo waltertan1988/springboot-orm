@@ -20,7 +20,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -70,9 +69,7 @@ public class InsertNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
             if(param instanceof Map){
                 ((Map) param).put(keyField, keyValue);
             }else{
-                Field field = param.getClass().getDeclaredField(keyField);
-                field.setAccessible(true);
-                field.set(param, keyValue);
+                ReflectionUtil.setBeanProperty(param, ReflectionUtil.toLowerCamel(keyField), keyValue);
             }
         }
 
