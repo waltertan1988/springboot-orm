@@ -1,6 +1,6 @@
-package com.walter.orm.processor.proxy;
+package com.walter.orm.core.proxy;
 
-import com.walter.orm.processor.sql.AbstractNamedParameterSqlProcessor;
+import com.walter.orm.core.sql.AbstractNamedParameterSqlProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;

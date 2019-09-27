@@ -1,7 +1,8 @@
-package com.walter.orm.processor.sql;
+package com.walter.orm.core.sql;
 
-import com.walter.orm.annotation.Delete;
+import com.walter.orm.annotation.Param;
 import com.walter.orm.annotation.SqlSet;
+import com.walter.orm.annotation.Update;
 import com.walter.orm.throwable.SqlSetException;
 import com.walter.orm.util.FreemarkerUtil;
 import com.walter.orm.util.ReflectionUtil;
@@ -11,59 +12,73 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Map;
 
 @Slf4j
 @Component
-public class DeleteNamedParameterSqlProcessor extends AbstractNamedParameterSqlProcessor {
+public class UpdateNamedParameterSqlProcessor extends AbstractNamedParameterSqlProcessor {
     @Autowired
     private ApplicationContext applicationContext;
 
     @Override
     public Object process(Class<?> targetInterface, Object proxy, Method method, Object[] args) {
-        if(args != null && args.length != 1 && !(args[0] instanceof Map) && !ReflectionUtil.isCustomClass(args[0].getClass())){
-            throw new SqlSetException("Method arg should be Map or POJO");
+        Parameter[] parameters = method.getParameters();
+
+        if(parameters.length != 2){
+            throw new SqlSetException("Error args number");
         }
 
-        Delete delete = AnnotationUtils.getAnnotation(method, Delete.class);
-        String sqlStatement = delete.statement();
-        Object param = args[0];
-        DataSource dataSource = getDataSource(targetInterface, delete);
+        Map<String, Object> entity = null, param = null;
+        for (int i = 0; i < parameters.length; i++) {
+            if(parameters[i].isAnnotationPresent(Param.class)){
+                param = ReflectionUtil.toMap(args[i], true);
+            }else {
+                entity = ReflectionUtil.toMap(args[i], true);
+            }
+        }
+
+        Assert.notNull(entity, "Missing new entity");
+        Assert.notNull(param, "Missing param");
+
+        for (Map.Entry<String, Object> entry : param.entrySet()) {
+            entity.put(Update.PARAM_PREFIX + entry.getKey(), entry.getValue());
+        }
+
+        Update update = AnnotationUtils.getAnnotation(method, Update.class);
+
+        DataSource dataSource = getDataSource(targetInterface, update);
         if(dataSource == null) {
             throw new SqlSetException("Missing datasource for method ?.?()", targetInterface.getName(), method.getName());
         }
 
-        String preparedSqlStatement = FreemarkerUtil.parse(sqlStatement, param);
+        String sqlStatement = update.statement();
 
-        return doDelete(dataSource, preparedSqlStatement, param);
+        String preparedSqlStatement = FreemarkerUtil.parse(sqlStatement, entity);
+
+        return doUpdate(dataSource, preparedSqlStatement, entity);
     }
 
-    private int doDelete(DataSource dataSource, String preparedSqlStatement, Object param) {
+    private int doUpdate(DataSource dataSource, String preparedSqlStatement, Map<String, Object> param) {
         log.debug("sql: {}", preparedSqlStatement);
         log.debug("param: {}", param);
 
-        SqlParameterSource sqlParameterSource = null;
-        if(param instanceof Map) {
-            sqlParameterSource = new MapSqlParameterSource((Map)param);
-        }else if(null != param) {
-            sqlParameterSource = new BeanPropertySqlParameterSource(param);
-        }
-
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource(param);
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
         int count = namedParameterJdbcTemplate.update(preparedSqlStatement, sqlParameterSource);
         return count;
     }
 
-    private DataSource getDataSource(Class<?> targetInterface, Delete delete){
-        String dsName = delete.dataSourceRef();
+    private DataSource getDataSource(Class<?> targetInterface, Update update){
+        String dsName = update.dataSourceRef();
         dsName = (StringUtils.isNotBlank(dsName) ? dsName : AnnotationUtils.getAnnotation(targetInterface, SqlSet.class).dataSourceRef());
         DataSource dataSource = applicationContext.getBean(dsName, DataSource.class);
         return dataSource;
@@ -71,6 +86,6 @@ public class DeleteNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
 
     @Override
     public Boolean support(Method method) {
-        return method.isAnnotationPresent(Delete.class);
+        return method.isAnnotationPresent(Update.class);
     }
 }

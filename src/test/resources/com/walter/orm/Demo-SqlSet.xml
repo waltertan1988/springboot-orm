@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<orm xmlns="http://www.waltertan.com/ORMSchema"
+<sqlset xmlns="http://www.waltertan.com/ORMSchema"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.com/ORMSchema OrmSchema.xsd"
-     dataSourceRef="primary">
+     dataSourceRef="dataSource">
 
-    <select id="beanId" dataSourceRef="primary">
+    <select id="listAllDepartment" dataSourceRef="dataSource" resultType="java.util.Collection" multiReturnElementType="com.walter.orm.repository.demo1.Demo1Domain">
         <![CDATA[
-            select * from employee
-            where 1=1
-            <!-- and 1 = 0 -->
-            <#if gender??>
-                and gender = #{gender}
-            </#if>
-            <#if email?exists>
-                and email like '${email}'
-            </#if>
+            select * from department
         ]]>
     </select>
-</orm>
+</sqlset>

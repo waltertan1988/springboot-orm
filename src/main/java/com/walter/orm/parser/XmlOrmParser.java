@@ -1,7 +1,9 @@
 package com.walter.orm.parser;
 
 import com.walter.orm.constant.Constants;
-import com.walter.orm.common.SqlSet;
+import com.walter.orm.definition.AbstractSqlBean;
+import com.walter.orm.definition.SelectSqlBean;
+import com.walter.orm.definition.SqlSetHolder;
 import com.walter.orm.throwable.SqlSetException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -30,9 +34,9 @@ public class XmlOrmParser extends AbstractOrmParser {
     private ConfigurableApplicationContext configurableApplicationContext;
 
     @Override
-    protected Collection<SqlSet> parse() {
+    protected Collection<AbstractSqlBean> parse() {
 
-        Set<SqlSet> resultSqlSets = new HashSet<>();
+        Set<AbstractSqlBean> resultSqlSets = new HashSet<>();
 
         try {
             Resource[] resources = configurableApplicationContext.getResources(SQLSET_XML_PATTERN);
@@ -40,44 +44,46 @@ public class XmlOrmParser extends AbstractOrmParser {
                 resultSqlSets.addAll(createSqlSet(res.getFile()));
                 log.info("Created SqlSet from {}...", res.getFilename());
             }
-        } catch (IOException | DocumentException e) {
+        } catch (IOException | DocumentException | ClassNotFoundException e) {
             throw new SqlSetException(e);
         }
 
         return resultSqlSets;
     }
 
-    private Collection<SqlSet> createSqlSet(File xml) throws DocumentException {
-        Set<SqlSet> result = new HashSet<>();
+    private Collection<AbstractSqlBean> createSqlSet(File xml) throws DocumentException, ClassNotFoundException {
+        Set<AbstractSqlBean> result = new HashSet<>();
         SAXReader reader = new SAXReader();
         Document document = reader.read(xml);
 
         Element ormElement = document.getRootElement();
-        final String DEFAULT_DATA_SOURCE_REF = ormElement.attributeValue(Constants.SqlSet.Attribute.DATA_SOURCE_REF);
+        final String DEFAULT_DATA_SOURCE_REF = ormElement.attributeValue(Constants.SqlSet.DATA_SOURCE_REF);
         List<Element> sqlElementList = ormElement.elements();
         for (Element sqlElement : sqlElementList) {
-            if(sqlElement.getName().equals(Constants.SqlSet.Statement.SELECT)){
-                String id = sqlElement.attributeValue(Constants.SqlSet.Attribute.ID);
-                String datasourceRef = DEFAULT_DATA_SOURCE_REF;
-                String sqlElementDatasourceRef = sqlElement.attributeValue(Constants.SqlSet.Attribute.DATA_SOURCE_REF);
-                if(StringUtils.isNotBlank(sqlElementDatasourceRef)){
-                    datasourceRef = sqlElementDatasourceRef;
+            String id = sqlElement.attributeValue(Constants.SqlSet.ID);
+            String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "").trim();
+
+            String _datasourceRef = DEFAULT_DATA_SOURCE_REF;
+            String _sqlElementDatasourceRef = sqlElement.attributeValue(Constants.SqlSet.DATA_SOURCE_REF);
+            if(StringUtils.isNotBlank(_sqlElementDatasourceRef)){
+                _datasourceRef = _sqlElementDatasourceRef;
+            }
+            DataSource dataSource = configurableApplicationContext.getBean(_datasourceRef, DataSource.class);
+
+            if(sqlElement.getName().equals(Constants.SqlSet.Select.class.getSimpleName().toLowerCase())){
+                String _resultType = sqlElement.attributeValue(Constants.SqlSet.Select.RESULT_TYPE);
+                if(StringUtils.isBlank(_resultType)){
+                    _resultType = HashMap.class.getName();
                 }
-                String parameterType = sqlElement.attributeValue(Constants.SqlSet.Attribute.PARAMETER_TYPE);
-                if(StringUtils.isBlank(parameterType)){
-                    parameterType = HashMap.class.getName();
+                Class<?> resultType = Class.forName(_resultType);
+
+                Class<?> multiReturnElementType = null;
+                String _multiReturnElementType = sqlElement.attributeValue(Constants.SqlSet.Select.MULTI_RETURN_ELEMENT_TYPE);
+                if(StringUtils.isNotBlank(_multiReturnElementType)){
+                    multiReturnElementType = Class.forName(_multiReturnElementType);
                 }
-                String resultType = sqlElement.attributeValue(Constants.SqlSet.Attribute.RESULT_TYPE);
-                if(StringUtils.isBlank(resultType)){
-                    resultType = HashMap.class.getName();
-                }
-                String _multiResult = sqlElement.attributeValue(Constants.SqlSet.Attribute.MULTI_RESULT);
-                Boolean multiResult = true;
-                if(StringUtils.isNotBlank(_multiResult)){
-                    multiResult = Boolean.valueOf(_multiResult);
-                }
-                String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "");
-                SqlSet sqlSet = new SqlSet(id, SqlSet.Type.XML, datasourceRef, parameterType, resultType, multiResult, statement);
+
+                AbstractSqlBean sqlSet = new SelectSqlBean(id, AbstractSqlBean.ConfigType.XML, statement, dataSource, resultType, multiReturnElementType);
                 result.add(sqlSet);
                 log.info("SqlSet: {}", sqlSet.toString());
             }
@@ -86,8 +92,15 @@ public class XmlOrmParser extends AbstractOrmParser {
         return result;
     }
 
+    @PostConstruct
+    private void postConstruct() {
+        if(SqlSetHolder.isEmpty(supportSqlSetType())) {
+            parse().forEach(sqlSet -> SqlSetHolder.put(sqlSet.getId(), sqlSet));
+        }
+    }
+
     @Override
-    protected SqlSet.Type supportSqlSetType() {
-        return SqlSet.Type.XML;
+    protected AbstractSqlBean.ConfigType supportSqlSetType() {
+        return AbstractSqlBean.ConfigType.XML;
     }
 }

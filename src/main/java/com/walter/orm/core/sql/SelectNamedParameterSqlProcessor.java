@@ -1,4 +1,4 @@
-package com.walter.orm.processor.sql;
+package com.walter.orm.core.sql;
 
 import com.walter.orm.annotation.Select;
 import com.walter.orm.annotation.SqlSet;
@@ -76,7 +76,7 @@ public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
 
         if(Void.class.equals(returnType)){
-            return Void.class.newInstance();
+            throw new SqlSetException("Return type cannot be void");
         }else if(Collection.class.isAssignableFrom(returnType)) {
             List<Map<String, Object>> mapList = namedParameterJdbcTemplate.queryForList(preparedSqlStatement, sqlParameterSource);
             if(Map.class.isAssignableFrom(multiReturnElementType)){

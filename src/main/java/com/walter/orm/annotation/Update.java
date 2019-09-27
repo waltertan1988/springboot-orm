@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Inherited
 public @interface Update {
 
-    static final String PARAM_PREFIX = "_";
+    String PARAM_PREFIX = "_";
 
     @AliasFor("statement")
     String value() default "";

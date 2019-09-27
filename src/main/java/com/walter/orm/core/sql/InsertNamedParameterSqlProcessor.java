@@ -1,4 +1,4 @@
-package com.walter.orm.processor.sql;
+package com.walter.orm.core.sql;
 
 import com.walter.orm.annotation.Insert;
 import com.walter.orm.annotation.SqlSet;

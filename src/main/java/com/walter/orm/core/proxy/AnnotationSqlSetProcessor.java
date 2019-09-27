@@ -1,4 +1,4 @@
-package com.walter.orm.processor.proxy;
+package com.walter.orm.core.proxy;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

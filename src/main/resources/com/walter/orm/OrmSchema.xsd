@@ -2,7 +2,7 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
         targetNamespace="http://www.waltertan.com/ORMSchema"
         elementFormDefault="qualified">
-    <element name="orm">
+    <element name="sqlset">
         <complexType>
             <sequence maxOccurs="unbounded">
                 <element name="select" minOccurs="0">
@@ -11,9 +11,8 @@
                             <extension base="string">
                                 <attribute name="id" type="string" use="required"/>
                                 <attribute name="dataSourceRef" type="string" use="optional"/>
-                                <attribute name="parameterType" type="string" use="optional"/>
                                 <attribute name="resultType" type="string" use="optional"/>
-                                <attribute name="multiResult" type="boolean" use="optional"/>
+                                <attribute name="multiReturnElementType" type="string" use="optional"/>
                             </extension>
                         </simpleContent>
                     </complexType>
