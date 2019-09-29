@@ -1,4 +1,4 @@
-package com.walter.orm.core.proxy;
+package com.walter.orm.core.annotation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -24,7 +24,7 @@ import java.util.Set;
 
 @Slf4j
 @Component
-public class AnnotationSqlSetProcessor implements BeanDefinitionRegistryPostProcessor {
+public class MethodProxyFactoryDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
     private Set<String> scanPackages = Sets.newHashSet();
 
@@ -34,9 +34,9 @@ public class AnnotationSqlSetProcessor implements BeanDefinitionRegistryPostProc
 
         this.listSqlSetInterfaces().forEach(interfaceClz -> {
             // 构造SqlSet接口对应的BeanDefinition
-            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(SqlSetInterfaceProxyFactoryBean.class);
-            for (Field field : SqlSetInterfaceProxyFactoryBean.class.getDeclaredFields()) {
-                if(field.isAnnotationPresent(SqlSetInterfaceProxyFactoryBean.TargetInterface.class)){
+            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(MethodProxyFactory.class);
+            for (Field field : MethodProxyFactory.class.getDeclaredFields()) {
+                if(field.isAnnotationPresent(MethodProxyFactory.TargetInterface.class)){
                     beanDefinitionBuilder.addPropertyValue(field.getName(), interfaceClz);
                 }
             }

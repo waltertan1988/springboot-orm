@@ -1,4 +1,4 @@
-package com.walter.orm.definition;
+package com.walter.orm.core.sqlset;
 
 import lombok.*;
 
@@ -8,19 +8,20 @@ import javax.sql.DataSource;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class AbstractSqlBean {
+public abstract class AbstractSqlSet {
     @NonNull
-    private String id;
+    protected String id;
     @NonNull
-    private ConfigType configType;
+    protected ConfigType configType;
+    protected DataSource dataSource;
     @NonNull
-    private String statement;
-    private DataSource dataSource;
+    protected String statement;
 
     @AllArgsConstructor
     public enum ConfigType {
         DB(0),
-        XML(1);
+        XML(1),
+        ANNOTATION(2);
         private int code;
     }
 }

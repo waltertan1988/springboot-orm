@@ -1,6 +1,8 @@
-package com.walter.orm.core.proxy;
+package com.walter.orm.core.annotation;
 
-import com.walter.orm.core.sql.AbstractNamedParameterSqlProcessor;
+import com.walter.orm.core.executor.AbstractNamedParameterSqlSetExecutor;
+import com.walter.orm.core.handler.AnnotationSqlSetHandler;
+import com.walter.orm.core.parser.AbstractAnnotationSqlSetParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
@@ -13,7 +15,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 @Slf4j
-public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationHandler, ApplicationContextAware {
+public class MethodProxyFactory implements FactoryBean, InvocationHandler, ApplicationContextAware {
 
     @TargetInterface
     private Class<?> targetInterface;
@@ -38,9 +40,16 @@ public class SqlSetInterfaceProxyFactoryBean implements FactoryBean, InvocationH
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        AbstractNamedParameterSqlProcessor processor = applicationContext.getBeansOfType(AbstractNamedParameterSqlProcessor.class)
+        AbstractAnnotationSqlSetParser parser = applicationContext.getBeansOfType(AbstractAnnotationSqlSetParser.class)
                 .values().stream().filter(p -> p.support(method)).findFirst().get();
-        return processor.process(targetInterface, proxy, method, args);
+
+        AbstractNamedParameterSqlSetExecutor executor = applicationContext.getBeansOfType(AbstractNamedParameterSqlSetExecutor.class)
+                .values().stream().filter(e -> e.support(method)).findFirst().get();
+
+        AnnotationSqlSetHandler handler = applicationContext.getBeansOfType(AnnotationSqlSetHandler.class)
+                .values().stream().filter(h -> h.support(method)).findFirst().get();
+
+        return handler.handle(parser, executor, args, method);
     }
 
     @SuppressWarnings("unused")

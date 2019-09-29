@@ -1,15 +1,12 @@
-package com.walter.orm.core.sql;
+package com.walter.orm.core.executor;
 
 import com.walter.orm.annotation.Select;
-import com.walter.orm.annotation.SqlSet;
+import com.walter.orm.core.sqlset.AbstractSqlSet;
+import com.walter.orm.core.sqlset.SelectSqlSet;
 import com.walter.orm.throwable.SqlSetException;
 import com.walter.orm.util.FreemarkerUtil;
 import com.walter.orm.util.ReflectionUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -27,51 +24,29 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlProcessor {
-    @Autowired
-    private ApplicationContext applicationContext;
+public class SelectNamedParameterSqlSetExecutor extends AbstractNamedParameterSqlSetExecutor {
 
     @Override
-    public Object process(Class<?> targetInterface, Object proxy, Method method, Object[] args) throws Exception {
-        if(args != null && args.length > 1){
-            throw new SqlSetException("Method arg should be Void, Map or POJO");
-        }
-
-        Select select = AnnotationUtils.getAnnotation(method, Select.class);
-        String sqlStatement = select.statement();
-        DataSource dataSource = getDataSource(targetInterface, select);
-        if(dataSource == null) {
-            throw new SqlSetException("Missing datasource for method ?.?()", targetInterface.getName(), method.getName());
-        }
-
-        Class<?> returnType = method.getReturnType();
-
-        Class<?> multiReturnElementType = null;
-        if(Collection.class.isAssignableFrom(returnType)){
-            multiReturnElementType = select.multiReturnElementType();
-        }
-
+    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
+        SelectSqlSet selectSqlSet = (SelectSqlSet) sqlSet;
         Object param = null;
         if(args != null){
             param = args[0];
         }
-
-        String preparedSqlStatement = FreemarkerUtil.parse(sqlStatement, param);
-
-        return doSelect(dataSource, preparedSqlStatement, param, returnType, multiReturnElementType);
+        return doSelect(sqlSet.getDataSource(), sqlSet.getStatement(), param,
+                selectSqlSet.getResultType(), selectSqlSet.getMultiReturnElementType());
     }
 
-    private Object doSelect(DataSource dataSource, String preparedSqlStatement, Object param, Class<?> returnType,
-                            Class<?> multiReturnElementType) throws IllegalAccessException, InstantiationException, NoSuchFieldException {
-        log.debug("sql: {}", preparedSqlStatement);
-        log.debug("param: {}", param);
-
+    private Object doSelect(DataSource dataSource, String statement, Object param, Class<?> returnType,
+                            Class<?> multiReturnElementType) {
         SqlParameterSource sqlParameterSource = null;
         if(param instanceof Map) {
             sqlParameterSource = new MapSqlParameterSource((Map)param);
         }else if(null != param) {
             sqlParameterSource = new BeanPropertySqlParameterSource(param);
         }
+
+        String preparedSqlStatement = FreemarkerUtil.parse(statement, param);
 
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
 
@@ -84,7 +59,12 @@ public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
             }else{
                 List<Object> resultList = new ArrayList<>(mapList.size());
                 for (Map<String, Object> map : mapList) {
-                    Object element = multiReturnElementType.newInstance();
+                    Object element = null;
+                    try {
+                        element = multiReturnElementType.newInstance();
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new SqlSetException(e);
+                    }
                     for (Map.Entry<String, Object> entry : map.entrySet()) {
                         ReflectionUtil.setBeanProperty(element, ReflectionUtil.toLowerCamel(entry.getKey()), entry.getValue());
                     }
@@ -102,15 +82,16 @@ public class SelectNamedParameterSqlProcessor extends AbstractNamedParameterSqlP
         }
     }
 
-    private DataSource getDataSource(Class<?> targetInterface, Select select){
-        String dsName = select.dataSourceRef();
-        dsName = (StringUtils.isNotBlank(dsName) ? dsName : AnnotationUtils.getAnnotation(targetInterface, SqlSet.class).dataSourceRef());
-        DataSource dataSource = applicationContext.getBean(dsName, DataSource.class);
-        return dataSource;
-    }
-
     @Override
     public Boolean support(Method method) {
         return method.isAnnotationPresent(Select.class);
+    }
+
+    @Override
+    protected void preExecute(AbstractSqlSet sqlSet, Object[] args) {
+        super.preExecute(sqlSet, args);
+        if(args != null && args.length > 1){
+            throw new SqlSetException("Method arg should be Void, Map or POJO");
+        }
     }
 }

@@ -1,9 +1,8 @@
-package com.walter.orm.parser;
+package com.walter.orm.core.parser;
 
 import com.walter.orm.constant.Constants;
-import com.walter.orm.definition.AbstractSqlBean;
-import com.walter.orm.definition.SelectSqlBean;
-import com.walter.orm.definition.SqlSetHolder;
+import com.walter.orm.core.sqlset.AbstractSqlSet;
+import com.walter.orm.core.sqlset.SqlSetHolder;
 import com.walter.orm.throwable.SqlSetException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +24,7 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class XmlOrmParser extends AbstractOrmParser {
+public class XmlOrmParser {
 
     private final String SQLSET_XML_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "/**/*-SqlSet.xml";
     private final String SQLSET_COMMENT_PATTERN = "<!--.*-->";
@@ -33,10 +32,9 @@ public class XmlOrmParser extends AbstractOrmParser {
     @Autowired
     private ConfigurableApplicationContext configurableApplicationContext;
 
-    @Override
-    protected Collection<AbstractSqlBean> parse() {
+    public Collection<AbstractSqlSet> parse() {
 
-        Set<AbstractSqlBean> resultSqlSets = new HashSet<>();
+        Set<AbstractSqlSet> resultSqlSets = new HashSet<>();
 
         try {
             Resource[] resources = configurableApplicationContext.getResources(SQLSET_XML_PATTERN);
@@ -51,8 +49,8 @@ public class XmlOrmParser extends AbstractOrmParser {
         return resultSqlSets;
     }
 
-    private Collection<AbstractSqlBean> createSqlSet(File xml) throws DocumentException, ClassNotFoundException {
-        Set<AbstractSqlBean> result = new HashSet<>();
+    private Collection<AbstractSqlSet> createSqlSet(File xml) throws DocumentException, ClassNotFoundException {
+        Set<AbstractSqlSet> result = new HashSet<>();
         SAXReader reader = new SAXReader();
         Document document = reader.read(xml);
 
@@ -83,9 +81,9 @@ public class XmlOrmParser extends AbstractOrmParser {
                     multiReturnElementType = Class.forName(_multiReturnElementType);
                 }
 
-                AbstractSqlBean sqlSet = new SelectSqlBean(id, AbstractSqlBean.ConfigType.XML, statement, dataSource, resultType, multiReturnElementType);
-                result.add(sqlSet);
-                log.info("SqlSet: {}", sqlSet.toString());
+//                AbstractSqlSet sqlSet = new SelectSqlSet(id, AbstractSqlSet.ConfigType.XML, dataSource, statement, resultType, multiReturnElementType);
+//                result.add(sqlSet);
+//                log.info("SqlSet: {}", sqlSet.toString());
             }
         }
 
@@ -94,13 +92,8 @@ public class XmlOrmParser extends AbstractOrmParser {
 
     @PostConstruct
     private void postConstruct() {
-        if(SqlSetHolder.isEmpty(supportSqlSetType())) {
+        if(SqlSetHolder.isEmpty(AbstractSqlSet.ConfigType.XML)) {
             parse().forEach(sqlSet -> SqlSetHolder.put(sqlSet.getId(), sqlSet));
         }
-    }
-
-    @Override
-    protected AbstractSqlBean.ConfigType supportSqlSetType() {
-        return AbstractSqlBean.ConfigType.XML;
     }
 }

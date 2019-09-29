@@ -1,6 +1,6 @@
 package com.walter.orm.parser;
 
-import com.walter.orm.definition.SqlSetHolder;
+import com.walter.orm.core.sqlset.SqlSetHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
