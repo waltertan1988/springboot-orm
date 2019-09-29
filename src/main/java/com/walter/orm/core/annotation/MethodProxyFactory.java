@@ -1,7 +1,7 @@
 package com.walter.orm.core.annotation;
 
 import com.walter.orm.core.executor.AbstractNamedParameterSqlSetExecutor;
-import com.walter.orm.core.handler.AnnotationSqlSetHandler;
+import com.walter.orm.core.handler.AbstractAnnotationSqlSetHandler;
 import com.walter.orm.core.parser.AbstractAnnotationSqlSetParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -46,10 +46,10 @@ public class MethodProxyFactory implements FactoryBean, InvocationHandler, Appli
         AbstractNamedParameterSqlSetExecutor executor = applicationContext.getBeansOfType(AbstractNamedParameterSqlSetExecutor.class)
                 .values().stream().filter(e -> e.support(method)).findFirst().get();
 
-        AnnotationSqlSetHandler handler = applicationContext.getBeansOfType(AnnotationSqlSetHandler.class)
+        AbstractAnnotationSqlSetHandler handler = applicationContext.getBeansOfType(AbstractAnnotationSqlSetHandler.class)
                 .values().stream().filter(h -> h.support(method)).findFirst().get();
 
-        return handler.handle(parser, executor, args, method);
+        return handler.handle(parser, executor, args, targetInterface, method);
     }
 
     @SuppressWarnings("unused")

@@ -11,7 +11,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -55,7 +54,7 @@ public class Demo1RepositoryTests {
 
     @Test
     public void testSaveObject(){
-        Demo1Domain domain = new Demo1Domain(null, UUID.randomUUID().toString(),"财务部");
+        Demo1Domain domain = new Demo1Domain(null, "D0004","财务部");
         long count = demo1Repository.saveObject(domain);
         Assert.assertTrue(1 == count);
         log.debug(domain.toString());
@@ -64,8 +63,8 @@ public class Demo1RepositoryTests {
     @Test
     public void testSaveMap(){
         Map<String, Object> params = new HashMap<>();
-        params.put("code", UUID.randomUUID().toString());
-        params.put("name", "业务部");
+        params.put("code", "D0003");
+        params.put("name", "财务部");
         long count = demo1Repository.saveMap(params);
         Assert.assertTrue(1 == count);
         log.debug(params.toString());
@@ -73,7 +72,7 @@ public class Demo1RepositoryTests {
 
     @Test
     public void testDeleteByObject(){
-        Demo1Domain domain = new Demo1Domain(null, null,"业务部");
+        Demo1Domain domain = new Demo1Domain(null, null,"财务部");
         demo1Repository.deleteByObject(domain);
     }
 
@@ -87,7 +86,7 @@ public class Demo1RepositoryTests {
 
     @Test
     public void testUpdateObjectByObject(){
-        Demo1Domain entity = new Demo1Domain(null, "D0003", null);
+        Demo1Domain entity = new Demo1Domain(null, "D0005", null);
         Demo1Domain param = new Demo1Domain(null, "D0004", null);
         long result = demo1Repository.updateObjectByObject(entity, param);
         log.debug("count: {}", result);

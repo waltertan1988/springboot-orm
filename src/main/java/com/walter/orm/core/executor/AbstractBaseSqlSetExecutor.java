@@ -11,8 +11,9 @@ public abstract class AbstractBaseSqlSetExecutor {
     }
 
     protected void preExecute(AbstractSqlSet sqlSet, Object[] args){
-        log.debug("SqlSet: {}", sqlSet.toString());
-        log.debug("Args: {}", args);
+        log.debug("id: {}, datasource: {}", sqlSet.getId(), sqlSet.getDataSource());
+        log.debug("statement: {}", sqlSet.getStatement());
+        log.debug("args: {}", args);
     }
 
     protected abstract Object doExecute(AbstractSqlSet sqlSet, Object[] args);

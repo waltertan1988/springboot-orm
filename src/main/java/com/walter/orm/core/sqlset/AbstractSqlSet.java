@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractSqlSet {
-    @NonNull
     protected String id;
     @NonNull
     protected ConfigType configType;

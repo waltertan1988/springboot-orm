@@ -12,9 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @Slf4j
-public abstract class AbstractAnnotationSqlSetParser implements AbstractSqlSetParser {
+public abstract class AbstractAnnotationSqlSetParser {
 
-    public abstract AbstractSqlSet parse(Class<?> targetInterface, Object proxy, Method method, Object[] args);
+    public abstract AbstractSqlSet parse(Class<?> targetInterface, Method method);
 
     public abstract boolean support(Method method);
 

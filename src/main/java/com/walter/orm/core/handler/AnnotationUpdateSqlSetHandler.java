@@ -6,7 +6,6 @@ import com.walter.orm.core.executor.AbstractBaseSqlSetExecutor;
 import com.walter.orm.core.parser.AbstractAnnotationSqlSetParser;
 import com.walter.orm.throwable.SqlSetException;
 import com.walter.orm.util.ReflectionUtil;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -14,13 +13,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 
-@Order(100)
 @Component
-public class AnnotationUpdateSqlSetHandler extends AnnotationSqlSetHandler {
-    @Override
-    public Object handle(AbstractAnnotationSqlSetParser parser, AbstractBaseSqlSetExecutor executor, Object[] args, Method method) {
-        Parameter[] parameters = method.getParameters();
+public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandler {
 
+    @Override
+    public Object handle(AbstractAnnotationSqlSetParser parser, AbstractBaseSqlSetExecutor executor, Object[] args, Class<?> targetInterface, Method method){
+        return executor.execute(parser.parse(targetInterface, method), wrapArgs(args, method));
+    }
+
+    private Object[] wrapArgs(Object[] args, Method method) {
+        Parameter[] parameters = method.getParameters();
         if(parameters.length != 2){
             throw new SqlSetException("Error args number");
         }
@@ -41,7 +43,7 @@ public class AnnotationUpdateSqlSetHandler extends AnnotationSqlSetHandler {
             entity.put(Update.PARAM_PREFIX + entry.getKey(), entry.getValue());
         }
 
-        return super.handle(parser, executor, new Object[]{entity});
+        return new Object[]{entity};
     }
 
     @Override

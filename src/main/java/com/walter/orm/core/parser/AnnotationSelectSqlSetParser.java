@@ -19,7 +19,7 @@ public class AnnotationSelectSqlSetParser extends AbstractAnnotationSqlSetParser
     private ApplicationContext applicationContext;
 
     @Override
-    public AbstractSqlSet parse(Class<?> targetInterface, Object proxy, Method method, Object[] args) {
+    public AbstractSqlSet parse(Class<?> targetInterface, Method method) {
         Select select = AnnotationUtils.getAnnotation(method, Select.class);
         String sqlStatement = select.statement();
         DataSource dataSource = applicationContext.getBean(getDataSourceName(targetInterface, select), DataSource.class);
