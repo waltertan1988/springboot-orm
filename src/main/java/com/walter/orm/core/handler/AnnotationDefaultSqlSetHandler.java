@@ -10,6 +10,11 @@ import java.lang.reflect.Method;
 @Component
 public class AnnotationDefaultSqlSetHandler extends AbstractAnnotationSqlSetHandler{
     @Override
+    protected Object[] wrapArgs(Object[] args, Object... extras) {
+        return args;
+    }
+
+    @Override
     public Boolean support(Method method){
         return !method.isAnnotationPresent(Update.class);
     }

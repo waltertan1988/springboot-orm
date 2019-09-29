@@ -2,7 +2,7 @@ package com.walter.orm.core.parser;
 
 import com.walter.orm.core.sqlset.AbstractSqlSet;
 
-public interface AbstractSqlSetParser {
+public abstract class AbstractSqlSetParser {
 
-    AbstractSqlSet parse();
+    public abstract AbstractSqlSet parse(Object... extras);
 }

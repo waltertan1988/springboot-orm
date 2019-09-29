@@ -18,7 +18,10 @@ public class AnnotationUpdateSqlSetParser extends AbstractAnnotationSqlSetParser
     private ApplicationContext applicationContext;
 
     @Override
-    public AbstractSqlSet parse(Class<?> targetInterface, Method method) {
+    public AbstractSqlSet parse(Object... extras) {
+        Class<?> targetInterface = (Class<?>) extras[0];
+        Method method = (Method) extras[1];
+
         Update update = AnnotationUtils.getAnnotation(method, Update.class);
 
         DataSource dataSource = applicationContext.getBean(getDataSourceName(targetInterface, update), DataSource.class);

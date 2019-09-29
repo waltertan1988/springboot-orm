@@ -18,7 +18,10 @@ public class AnnotationDeleteSqlSetParser extends AbstractAnnotationSqlSetParser
     private ApplicationContext applicationContext;
 
     @Override
-    public AbstractSqlSet parse(Class<?> targetInterface, Method method) {
+    public AbstractSqlSet parse(Object... extras) {
+        Class<?> targetInterface = (Class<?>) extras[0];
+        Method method = (Method) extras[1];
+
         Delete delete = AnnotationUtils.getAnnotation(method, Delete.class);
         String sqlStatement = delete.statement();
         DataSource dataSource = applicationContext.getBean(getDataSourceName(targetInterface, delete), DataSource.class);

@@ -6,7 +6,7 @@ import com.walter.orm.core.sqlset.AbstractSqlSet;
 
 public abstract class AbstractSqlSetHandler {
 
-    public Object handle(AbstractSqlSetParser parser, AbstractBaseSqlSetExecutor executor, Object[] args){
+    public Object handle(AbstractSqlSetParser parser, AbstractBaseSqlSetExecutor executor, Object[] args, Object... extras){
         AbstractSqlSet sqlSet = parser.parse();
         return executor.execute(sqlSet, args);
     }

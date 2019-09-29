@@ -18,7 +18,10 @@ public class AnnotationInsertSqlSetParser extends AbstractAnnotationSqlSetParser
     private ApplicationContext applicationContext;
 
     @Override
-    public AbstractSqlSet parse(Class<?> targetInterface, Method method) {
+    public AbstractSqlSet parse(Object... extras) {
+        Class<?> targetInterface = (Class<?>) extras[0];
+        Method method = (Method) extras[1];
+
         Insert insert = AnnotationUtils.getAnnotation(method, Insert.class);
         String sqlStatement = insert.statement();
         String keyField = insert.keyField();
