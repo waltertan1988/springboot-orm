@@ -1,19 +1,17 @@
 package org.walter.orm.parser.annotation;
 
-import org.walter.orm.annotation.SqlSet;
-import org.walter.orm.core.constant.Constants;
-import org.walter.orm.core.common.SupportChecker;
-import org.walter.orm.core.model.AbstractSqlSetParser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.walter.orm.annotation.SqlSet;
+import org.walter.orm.core.constant.Constants;
+import org.walter.orm.core.model.AbstractSqlSetParser;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 @Slf4j
-public abstract class AbstractAnnotationSqlSetParser extends AbstractSqlSetParser implements SupportChecker {
+public abstract class AbstractAnnotationSqlSetParser extends AbstractSqlSetParser {
 
     protected String getDataSourceName(Class<?> targetInterface, Annotation annotation){
         String dsName = null;
@@ -26,7 +24,7 @@ public abstract class AbstractAnnotationSqlSetParser extends AbstractSqlSetParse
     }
 
     @Override
-    public Boolean support(Class<?> clz, Method method) {
+    public Boolean support(Class<?> clz, Object... args) {
         return AbstractAnnotationSqlSetParser.class.isAssignableFrom(clz);
     }
 }

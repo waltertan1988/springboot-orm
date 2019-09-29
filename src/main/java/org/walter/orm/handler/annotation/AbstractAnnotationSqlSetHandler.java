@@ -1,14 +1,13 @@
 package org.walter.orm.handler.annotation;
 
-import org.walter.orm.core.common.SupportChecker;
 import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetHandler;
-import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
 import org.walter.orm.core.model.AbstractSqlSetParser;
+import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
 
 import java.lang.reflect.Method;
 
-public abstract class AbstractAnnotationSqlSetHandler extends AbstractSqlSetHandler implements SupportChecker {
+public abstract class AbstractAnnotationSqlSetHandler extends AbstractSqlSetHandler {
 
     @Override
     public Object handle(AbstractSqlSetParser parser, AbstractBaseSqlSetExecutor executor, Object[] args, Object... extras) {
@@ -21,7 +20,7 @@ public abstract class AbstractAnnotationSqlSetHandler extends AbstractSqlSetHand
     protected abstract Object[] wrapArgs(Object[] args, Object... extras);
 
     @Override
-    public Boolean support(Class<?> clz, Method method) {
+    public Boolean support(Class<?> clz, Object... args) {
         return AbstractAnnotationSqlSetHandler.class.isAssignableFrom(clz);
     }
 }

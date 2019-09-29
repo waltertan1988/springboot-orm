@@ -5,6 +5,7 @@ public class Constants {
     public static class OrmPropertiesKey {
         private OrmPropertiesKey(){}
         public static final String ORM_SQLSET_ANNOTATION_SCAN_PACKAGES = "orm.sqlset.annotation-scan-packages";
+        public static final String ORM_SQLSET_XML_LOCATION = "/**/*-SqlSet.xml";
     }
     public static class SqlSet {
         private SqlSet(){};

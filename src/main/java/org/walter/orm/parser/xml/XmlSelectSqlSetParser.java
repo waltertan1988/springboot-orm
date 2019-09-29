@@ -1,9 +1,5 @@
 package org.walter.orm.parser.xml;
 
-import org.walter.orm.core.constant.Constants;
-import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.SqlSetHolder;
-import org.walter.orm.throwable.SqlSetException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
@@ -15,8 +11,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
+import org.walter.orm.core.constant.Constants;
+import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.sqlset.SelectSqlSet;
+import org.walter.orm.throwable.SqlSetException;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +23,9 @@ import java.util.*;
 
 @Slf4j
 @Component
-public class XmlOrmParser {
+public class XmlSelectSqlSetParser extends AbstractXmlSqlSetParser {
 
-    private final String SQLSET_XML_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "/**/*-SqlSet.xml";
+    private final String SQLSET_XML_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + Constants.OrmPropertiesKey.ORM_SQLSET_XML_LOCATION;
     private final String SQLSET_COMMENT_PATTERN = "<!--.*-->";
 
     @Autowired
@@ -67,33 +66,42 @@ public class XmlOrmParser {
                 _datasourceRef = _sqlElementDatasourceRef;
             }
             DataSource dataSource = configurableApplicationContext.getBean(_datasourceRef, DataSource.class);
-
-            if(sqlElement.getName().equals(Constants.SqlSet.Select.class.getSimpleName().toLowerCase())){
-                String _resultType = sqlElement.attributeValue(Constants.SqlSet.Select.RESULT_TYPE);
-                if(StringUtils.isBlank(_resultType)){
-                    _resultType = HashMap.class.getName();
-                }
-                Class<?> resultType = Class.forName(_resultType);
-
-                Class<?> multiReturnElementType = null;
-                String _multiReturnElementType = sqlElement.attributeValue(Constants.SqlSet.Select.MULTI_RETURN_ELEMENT_TYPE);
-                if(StringUtils.isNotBlank(_multiReturnElementType)){
-                    multiReturnElementType = Class.forName(_multiReturnElementType);
-                }
-
-//                AbstractSqlSet sqlSet = new SelectSqlSet(id, AbstractSqlSet.ConfigType.XML, dataSource, statement, resultType, multiReturnElementType);
-//                result.add(sqlSet);
-//                log.info("SqlSet: {}", sqlSet.toString());
-            }
         }
 
         return result;
     }
 
-    @PostConstruct
-    private void postConstruct() {
-        if(SqlSetHolder.isEmpty(AbstractSqlSet.ConfigType.XML)) {
-            parse().forEach(sqlSet -> SqlSetHolder.put(sqlSet.getId(), sqlSet));
+    @Override
+    public AbstractSqlSet parse(Object... extras) {
+        SelectSqlSet sqlSet = (SelectSqlSet) extras[0];
+
+        try{
+            Element select = (Element) extras[1];
+
+            String _resultType = select.attributeValue(Constants.SqlSet.Select.RESULT_TYPE);
+            if(StringUtils.isBlank(_resultType)){
+                _resultType = HashMap.class.getName();
+            }
+            Class<?> resultType = Class.forName(_resultType);
+
+            Class<?> multiReturnElementType = null;
+            String _multiReturnElementType = select.attributeValue(Constants.SqlSet.Select.MULTI_RETURN_ELEMENT_TYPE);
+            if(StringUtils.isNotBlank(_multiReturnElementType)){
+                multiReturnElementType = Class.forName(_multiReturnElementType);
+            }
+
+            sqlSet.setResultType(resultType);
+            sqlSet.setMultiReturnElementType(multiReturnElementType);
+        }catch (ClassNotFoundException e){
+            throw new SqlSetException(e);
         }
+
+        return sqlSet;
+    }
+
+    @Override
+    public Boolean support(Class<?> clz, Object... args) {
+        Element select = (Element) args[0];
+        return super.support(clz, args) && Constants.SqlSet.Select.class.getSimpleName().toLowerCase().equals(select.getName());
     }
 }

@@ -42,7 +42,8 @@ public class DeleteNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
     }
 
     @Override
-    public Boolean support(Class<?> clz, Method method) {
+    public Boolean support(Class<?> clz, Object... args) {
+        Method method = (Method) args[0];
         return super.support(clz, method) && method.isAnnotationPresent(Delete.class);
     }
 

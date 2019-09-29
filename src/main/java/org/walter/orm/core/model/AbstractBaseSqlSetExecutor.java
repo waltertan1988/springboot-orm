@@ -1,9 +1,7 @@
 package org.walter.orm.core.model;
 
-import org.walter.orm.core.common.SupportChecker;
 import lombok.extern.slf4j.Slf4j;
-
-import java.lang.reflect.Method;
+import org.walter.orm.core.common.SupportChecker;
 
 @Slf4j
 public abstract class AbstractBaseSqlSetExecutor implements SupportChecker {
@@ -21,7 +19,7 @@ public abstract class AbstractBaseSqlSetExecutor implements SupportChecker {
     protected abstract Object doExecute(AbstractSqlSet sqlSet, Object[] args);
 
     @Override
-    public Boolean support(Class<?> clz, Method method) {
+    public Boolean support(Class<?> clz, Object... args) {
         return AbstractBaseSqlSetExecutor.class.isAssignableFrom(clz);
     }
 }
