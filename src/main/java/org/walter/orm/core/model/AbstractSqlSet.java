@@ -2,7 +2,6 @@ package org.walter.orm.core.model;
 
 import lombok.*;
 
-import javax.sql.DataSource;
 import java.util.Objects;
 
 @Data
@@ -13,7 +12,7 @@ public abstract class AbstractSqlSet {
     protected String id;
     @NonNull
     protected ConfigType configType;
-    protected DataSource dataSource;
+    protected String dataSource;
     @NonNull
     protected String statement;
 

@@ -3,6 +3,8 @@ package org.walter.orm.core.model;
 import lombok.extern.slf4j.Slf4j;
 import org.walter.orm.core.common.SupportChecker;
 
+import javax.sql.DataSource;
+
 @Slf4j
 public abstract class AbstractBaseSqlSetExecutor implements SupportChecker {
     public Object execute(AbstractSqlSet sqlSet, Object[] args){
@@ -22,4 +24,6 @@ public abstract class AbstractBaseSqlSetExecutor implements SupportChecker {
     public Boolean support(Class<?> clz, Object... args) {
         return AbstractBaseSqlSetExecutor.class.isAssignableFrom(clz);
     }
+
+    protected abstract DataSource getDataSource(String dataSourceRef);
 }

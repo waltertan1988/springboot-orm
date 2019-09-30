@@ -1,5 +1,7 @@
 package org.walter.orm.executor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.walter.orm.annotation.Insert;
 import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSet;
@@ -25,13 +27,16 @@ import java.util.Map;
 @Slf4j
 @Component
 public class InsertNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecutor {
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         InsertSqlSet insertSqlSet = (InsertSqlSet) sqlSet;
         return doInsert(sqlSet.getDataSource(), sqlSet.getStatement(), args[0], insertSqlSet.getKeyField());
     }
 
-    private int doInsert(DataSource dataSource, String statement, Object param, String keyField) {
+    private int doInsert(String dataSource, String statement, Object param, String keyField) {
         SqlParameterSource sqlParameterSource = null;
         if(param instanceof Map) {
             sqlParameterSource = new MapSqlParameterSource((Map)param);
@@ -40,7 +45,7 @@ public class InsertNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
         }
 
         String preparedSqlStatement = FreemarkerUtil.parse(statement, param);
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(getDataSource(dataSource)));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int count = namedParameterJdbcTemplate.update(preparedSqlStatement, sqlParameterSource, keyHolder);
         long keyValue = keyHolder.getKey().longValue();
@@ -54,6 +59,11 @@ public class InsertNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
         }
 
         return count;
+    }
+
+    @Override
+    protected DataSource getDataSource(String dataSourceRef) {
+        return applicationContext.getBean(dataSourceRef, DataSource.class);
     }
 
     @Override

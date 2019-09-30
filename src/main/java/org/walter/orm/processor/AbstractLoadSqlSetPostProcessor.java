@@ -15,7 +15,7 @@ public abstract class AbstractLoadSqlSetPostProcessor implements BeanPostProcess
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if(bean instanceof AbstractLoadSqlSetPostProcessor && support(null)){
+        if(support(null)){
             getSqlSets().forEach(sqlSet -> {
                 boolean duplicated = !SqlSetHolder.put(sqlSet);
                 if(duplicated) {

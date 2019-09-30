@@ -18,7 +18,6 @@ import org.walter.orm.processor.AbstractLoadSqlSetPostProcessor;
 import org.walter.orm.sqlset.SqlSetHolder;
 import org.walter.orm.throwable.SqlSetException;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -60,17 +59,18 @@ public class LoadXmlSqlSetProcessor extends AbstractLoadSqlSetPostProcessor {
             String id = sqlElement.attributeValue(Constants.SqlSet.ID);
             String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "").trim();
 
-            String _datasourceRef = DEFAULT_DATA_SOURCE_REF;
+            String datasource = DEFAULT_DATA_SOURCE_REF;
             String _sqlElementDatasourceRef = sqlElement.attributeValue(Constants.SqlSet.DATA_SOURCE_REF);
             if(StringUtils.isNotBlank(_sqlElementDatasourceRef)){
-                _datasourceRef = _sqlElementDatasourceRef;
+                datasource = _sqlElementDatasourceRef;
             }
-            DataSource dataSource = configurableApplicationContext.getBean(_datasourceRef, DataSource.class);
 
-            AbstractSqlSet sqlSet = xmlSqlSetParsers.stream().filter(p -> p.support(null, sqlElement)).findFirst().get().parse(sqlElement);
+            AbstractSqlSet sqlSet = xmlSqlSetParsers.stream().filter(p -> p.support(AbstractXmlSqlSetParser.class, sqlElement))
+                    .findFirst().get().parse(sqlElement);
             sqlSet.setId(id);
+            sqlSet.setConfigType(AbstractSqlSet.ConfigType.XML);
             sqlSet.setStatement(statement);
-            sqlSet.setDataSource(dataSource);
+            sqlSet.setDataSource(datasource);
             if(resultSqlSets.contains(sqlSet)){
                 throw new SqlSetException("Duplicated SqlSet: {}", sqlSet);
             }

@@ -1,11 +1,9 @@
 package org.walter.orm.sqlset;
 
-import org.walter.orm.core.model.AbstractSqlSet;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.sql.DataSource;
+import org.walter.orm.core.model.AbstractSqlSet;
 
 @Data
 @ToString(callSuper = true)
@@ -13,7 +11,7 @@ import javax.sql.DataSource;
 public class InsertSqlSet extends AbstractSqlSet {
     private String keyField;
 
-    public InsertSqlSet(String id, ConfigType configType, DataSource dataSource, String statement, String keyField){
+    public InsertSqlSet(String id, ConfigType configType, String dataSource, String statement, String keyField){
         super(id, configType, dataSource, statement);
         this.keyField = keyField;
     }

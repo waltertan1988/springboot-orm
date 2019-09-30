@@ -1,15 +1,13 @@
 package org.walter.orm.parser.annotation;
 
-import org.walter.orm.annotation.Select;
-import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.SelectSqlSet;
-import org.walter.orm.throwable.SqlSetException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
+import org.walter.orm.annotation.Select;
+import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.sqlset.SelectSqlSet;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
@@ -25,13 +23,8 @@ public class AnnotationSelectSqlSetParser extends AbstractAnnotationSqlSetParser
 
         Select select = AnnotationUtils.getAnnotation(method, Select.class);
         String sqlStatement = select.statement();
-        DataSource dataSource = applicationContext.getBean(getDataSourceName(targetInterface, select), DataSource.class);
-        if(dataSource == null) {
-            throw new SqlSetException("Missing datasource for method ?.?()", targetInterface.getName(), method.getName());
-        }
-
+        String dataSource = getDataSourceName(targetInterface, select);
         Class<?> returnType = method.getReturnType();
-
         Class<?> multiReturnElementType = null;
         if(Collection.class.isAssignableFrom(returnType)){
             multiReturnElementType = select.multiReturnElementType();

@@ -1,5 +1,7 @@
 package org.walter.orm.executor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.walter.orm.annotation.Delete;
 import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSet;
@@ -21,12 +23,16 @@ import java.util.Map;
 @Slf4j
 @Component
 public class DeleteNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecutor {
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         return doDelete(sqlSet.getDataSource(), sqlSet.getStatement(), args[0]);
     }
 
-    private int doDelete(DataSource dataSource, String statement, Object param) {
+    private int doDelete(String dataSource, String statement, Object param) {
         String preparedStatement = FreemarkerUtil.parse(statement, param);
 
         SqlParameterSource sqlParameterSource = null;
@@ -36,7 +42,7 @@ public class DeleteNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
             sqlParameterSource = new BeanPropertySqlParameterSource(param);
         }
 
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(getDataSource(dataSource)));
         int count = namedParameterJdbcTemplate.update(preparedStatement, sqlParameterSource);
         return count;
     }
@@ -45,6 +51,11 @@ public class DeleteNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
     public Boolean support(Class<?> clz, Object... args) {
         Method method = (Method) args[0];
         return super.support(clz, method) && method.isAnnotationPresent(Delete.class);
+    }
+
+    @Override
+    protected DataSource getDataSource(String dataSourceRef) {
+        return applicationContext.getBean(dataSourceRef, DataSource.class);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.walter.orm.executor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.walter.orm.annotation.Select;
 import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSet;
@@ -26,6 +28,8 @@ import java.util.Map;
 @Slf4j
 @Component
 public class SelectNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecutor {
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
@@ -38,7 +42,7 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
                 selectSqlSet.getResultType(), selectSqlSet.getMultiReturnElementType());
     }
 
-    private Object doSelect(DataSource dataSource, String statement, Object param, Class<?> returnType,
+    private Object doSelect(String dataSource, String statement, Object param, Class<?> returnType,
                             Class<?> multiReturnElementType) {
         SqlParameterSource sqlParameterSource = null;
         if(param instanceof Map) {
@@ -49,7 +53,7 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
 
         String preparedSqlStatement = FreemarkerUtil.parse(statement, param);
 
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(getDataSource(dataSource)));
 
         if(Void.class.equals(returnType)){
             throw new SqlSetException("Return type cannot be void");
@@ -81,6 +85,11 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
         }else {
             return namedParameterJdbcTemplate.queryForObject(preparedSqlStatement, sqlParameterSource, returnType);
         }
+    }
+
+    @Override
+    protected DataSource getDataSource(String dataSourceRef) {
+        return applicationContext.getBean(dataSourceRef, DataSource.class);
     }
 
     @Override
