@@ -1,6 +1,7 @@
-package org.walter.orm.handler.annotation;
+package org.walter.orm.processor.annotation;
 
 import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
+import org.walter.orm.handler.annotation.AbstractAnnotationSqlSetHandler;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;

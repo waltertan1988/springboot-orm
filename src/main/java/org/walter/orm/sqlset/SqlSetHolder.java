@@ -19,8 +19,13 @@ public class SqlSetHolder {
         }
     }
 
-    public static void put(String id, AbstractSqlSet sqlSet){
-        sqlSetMapList.get(sqlSet.getConfigType().ordinal()).put(id, sqlSet);
+    public static boolean put(AbstractSqlSet sqlSet){
+        Map<String, AbstractSqlSet> map = sqlSetMapList.get(sqlSet.getConfigType().ordinal());
+        if(map.containsKey(sqlSet.getId())){
+            return false;
+        }
+        map.put(sqlSet.getId(), sqlSet);
+        return true;
     }
 
     public static AbstractSqlSet get(AbstractSqlSet.ConfigType type, String id){

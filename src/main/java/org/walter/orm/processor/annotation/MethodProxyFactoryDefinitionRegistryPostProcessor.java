@@ -1,4 +1,4 @@
-package org.walter.orm.handler.annotation;
+package org.walter.orm.processor.annotation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
