@@ -7,7 +7,7 @@ import org.walter.orm.core.model.AbstractSqlSetExecutor;
 
 import javax.sql.DataSource;
 
-public abstract class AbstractNamedParameterSqlSetExecutor extends AbstractSqlSetExecutor implements ApplicationContextAware {
+public abstract class AbstractIocSqlSetExecutor extends AbstractSqlSetExecutor implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -23,6 +23,6 @@ public abstract class AbstractNamedParameterSqlSetExecutor extends AbstractSqlSe
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return AbstractNamedParameterSqlSetExecutor.class.isAssignableFrom(clz);
+        return AbstractIocSqlSetExecutor.class.isAssignableFrom(clz);
     }
 }

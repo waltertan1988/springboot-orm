@@ -5,7 +5,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.walter.orm.executor.AbstractNamedParameterSqlSetExecutor;
+import org.walter.orm.executor.AbstractIocSqlSetExecutor;
 import org.walter.orm.handler.annotation.AbstractAnnotationSqlSetHandler;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
 
@@ -43,7 +43,7 @@ public class MethodProxyFactory implements FactoryBean, InvocationHandler, Appli
         AbstractAnnotationSqlSetParser parser = applicationContext.getBeansOfType(AbstractAnnotationSqlSetParser.class)
                 .values().stream().filter(p -> p.support(p.getClass(), method)).findFirst().get();
 
-        AbstractNamedParameterSqlSetExecutor executor = applicationContext.getBeansOfType(AbstractNamedParameterSqlSetExecutor.class)
+        AbstractIocSqlSetExecutor executor = applicationContext.getBeansOfType(AbstractIocSqlSetExecutor.class)
                 .values().stream().filter(e -> e.support(e.getClass(), method)).findFirst().get();
 
         AbstractAnnotationSqlSetHandler handler = applicationContext.getBeansOfType(AbstractAnnotationSqlSetHandler.class)
