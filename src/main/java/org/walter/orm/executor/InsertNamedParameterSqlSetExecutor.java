@@ -25,9 +25,9 @@ import java.util.Map;
 @Component
 public class InsertNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args, DataSource dataSource) {
+    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         InsertSqlSet insertSqlSet = (InsertSqlSet) sqlSet;
-        return doInsert(dataSource, sqlSet.getStatement(), args[0], insertSqlSet.getKeyField());
+        return doInsert(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), args[0], insertSqlSet.getKeyField());
     }
 
     private int doInsert(DataSource dataSource, String statement, Object param, String keyField) {

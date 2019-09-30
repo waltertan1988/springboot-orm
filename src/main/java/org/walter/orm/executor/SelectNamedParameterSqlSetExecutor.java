@@ -26,13 +26,13 @@ import java.util.Map;
 @Component
 public class SelectNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args, DataSource dataSource) {
+    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         SelectSqlSet selectSqlSet = (SelectSqlSet) sqlSet;
         Object param = null;
         if(args != null){
             param = args[0];
         }
-        return doSelect(dataSource, sqlSet.getStatement(), param,
+        return doSelect(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), param,
                 selectSqlSet.getResultType(), selectSqlSet.getMultiReturnElementType());
     }
 

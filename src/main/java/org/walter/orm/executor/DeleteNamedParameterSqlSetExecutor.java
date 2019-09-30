@@ -21,8 +21,8 @@ import java.util.Map;
 @Component
 public class DeleteNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args, DataSource dataSource) {
-        return doDelete(dataSource, sqlSet.getStatement(), args[0]);
+    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
+        return doDelete(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), args[0]);
     }
 
     private int doDelete(DataSource dataSource, String statement, Object param) {

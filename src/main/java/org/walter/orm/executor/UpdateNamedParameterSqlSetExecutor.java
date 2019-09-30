@@ -18,9 +18,9 @@ import java.util.Map;
 @Component
 public class UpdateNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args, DataSource dataSource) {
+    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         Map<String, Object> mapParam = (Map<String, Object>) args[0];
-        return doUpdate(dataSource, sqlSet.getStatement(), mapParam);
+        return doUpdate(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), mapParam);
     }
 
     private int doUpdate(DataSource dataSource, String statement, Map<String, Object> param) {
