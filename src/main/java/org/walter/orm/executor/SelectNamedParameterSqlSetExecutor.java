@@ -1,14 +1,5 @@
 package org.walter.orm.executor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.walter.orm.annotation.Select;
-import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
-import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.SelectSqlSet;
-import org.walter.orm.throwable.SqlSetException;
-import org.walter.orm.util.FreemarkerUtil;
-import org.walter.orm.util.ReflectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +8,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
+import org.walter.orm.annotation.Select;
+import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.sqlset.SelectSqlSet;
+import org.walter.orm.throwable.SqlSetException;
+import org.walter.orm.util.FreemarkerUtil;
+import org.walter.orm.util.ReflectionUtil;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -27,22 +24,19 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class SelectNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecutor {
-    @Autowired
-    private ApplicationContext applicationContext;
-
+public class SelectNamedParameterSqlSetExecutor extends AbstractNamedParameterSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
+    public Object doExecute(AbstractSqlSet sqlSet, Object[] args, DataSource dataSource) {
         SelectSqlSet selectSqlSet = (SelectSqlSet) sqlSet;
         Object param = null;
         if(args != null){
             param = args[0];
         }
-        return doSelect(sqlSet.getDataSource(), sqlSet.getStatement(), param,
+        return doSelect(dataSource, sqlSet.getStatement(), param,
                 selectSqlSet.getResultType(), selectSqlSet.getMultiReturnElementType());
     }
 
-    private Object doSelect(String dataSource, String statement, Object param, Class<?> returnType,
+    private Object doSelect(DataSource dataSource, String statement, Object param, Class<?> returnType,
                             Class<?> multiReturnElementType) {
         SqlParameterSource sqlParameterSource = null;
         if(param instanceof Map) {
@@ -53,7 +47,7 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
 
         String preparedSqlStatement = FreemarkerUtil.parse(statement, param);
 
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(getDataSource(dataSource)));
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
 
         if(Void.class.equals(returnType)){
             throw new SqlSetException("Return type cannot be void");
@@ -85,11 +79,6 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
         }else {
             return namedParameterJdbcTemplate.queryForObject(preparedSqlStatement, sqlParameterSource, returnType);
         }
-    }
-
-    @Override
-    protected DataSource getDataSource(String dataSourceRef) {
-        return applicationContext.getBean(dataSourceRef, DataSource.class);
     }
 
     @Override

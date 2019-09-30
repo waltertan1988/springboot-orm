@@ -1,13 +1,5 @@
 package org.walter.orm.executor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.walter.orm.annotation.Delete;
-import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
-import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.throwable.SqlSetException;
-import org.walter.orm.util.FreemarkerUtil;
-import org.walter.orm.util.ReflectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -15,6 +7,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
+import org.walter.orm.annotation.Delete;
+import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.throwable.SqlSetException;
+import org.walter.orm.util.FreemarkerUtil;
+import org.walter.orm.util.ReflectionUtil;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -22,17 +19,13 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class DeleteNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecutor {
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
+public class DeleteNamedParameterSqlSetExecutor extends AbstractNamedParameterSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
-        return doDelete(sqlSet.getDataSource(), sqlSet.getStatement(), args[0]);
+    public Object doExecute(AbstractSqlSet sqlSet, Object[] args, DataSource dataSource) {
+        return doDelete(dataSource, sqlSet.getStatement(), args[0]);
     }
 
-    private int doDelete(String dataSource, String statement, Object param) {
+    private int doDelete(DataSource dataSource, String statement, Object param) {
         String preparedStatement = FreemarkerUtil.parse(statement, param);
 
         SqlParameterSource sqlParameterSource = null;
@@ -42,7 +35,7 @@ public class DeleteNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
             sqlParameterSource = new BeanPropertySqlParameterSource(param);
         }
 
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(getDataSource(dataSource)));
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(new JdbcTemplate(dataSource));
         int count = namedParameterJdbcTemplate.update(preparedStatement, sqlParameterSource);
         return count;
     }
@@ -51,11 +44,6 @@ public class DeleteNamedParameterSqlSetExecutor extends AbstractBaseSqlSetExecut
     public Boolean support(Class<?> clz, Object... args) {
         Method method = (Method) args[0];
         return super.support(clz, method) && method.isAnnotationPresent(Delete.class);
-    }
-
-    @Override
-    protected DataSource getDataSource(String dataSourceRef) {
-        return applicationContext.getBean(dataSourceRef, DataSource.class);
     }
 
     @Override

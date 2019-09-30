@@ -1,6 +1,6 @@
 package org.walter.orm.handler.annotation;
 
-import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
+import org.walter.orm.core.model.AbstractSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetHandler;
 import org.walter.orm.core.model.AbstractSqlSetParser;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 public abstract class AbstractAnnotationSqlSetHandler extends AbstractSqlSetHandler {
 
     @Override
-    public Object handle(AbstractSqlSetParser parser, AbstractBaseSqlSetExecutor executor, Object[] args, Object... extras) {
+    public Object handle(AbstractSqlSetParser parser, AbstractSqlSetExecutor executor, Object[] args, Object... extras) {
         AbstractAnnotationSqlSetParser abstractAnnotationSqlSetParser = (AbstractAnnotationSqlSetParser) parser;
         Class<?> targetInterface = (Class<?>) extras[0];
         Method method = (Method) extras[1];

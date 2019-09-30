@@ -6,10 +6,10 @@ import org.walter.orm.core.common.SupportChecker;
 import javax.sql.DataSource;
 
 @Slf4j
-public abstract class AbstractBaseSqlSetExecutor implements SupportChecker {
+public abstract class AbstractSqlSetExecutor implements SupportChecker {
     public Object execute(AbstractSqlSet sqlSet, Object[] args){
         preExecute(sqlSet, args);
-        return doExecute(sqlSet, args);
+        return doExecute(sqlSet, args, getDataSource(sqlSet.getDataSource()));
     }
 
     protected void preExecute(AbstractSqlSet sqlSet, Object[] args){
@@ -18,11 +18,11 @@ public abstract class AbstractBaseSqlSetExecutor implements SupportChecker {
         log.debug("args: {}", args);
     }
 
-    protected abstract Object doExecute(AbstractSqlSet sqlSet, Object[] args);
+    protected abstract Object doExecute(AbstractSqlSet sqlSet, Object[] args, DataSource dataSource);
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return AbstractBaseSqlSetExecutor.class.isAssignableFrom(clz);
+        return AbstractSqlSetExecutor.class.isAssignableFrom(clz);
     }
 
     protected abstract DataSource getDataSource(String dataSourceRef);

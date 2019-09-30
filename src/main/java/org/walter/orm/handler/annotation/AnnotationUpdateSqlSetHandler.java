@@ -2,7 +2,7 @@ package org.walter.orm.handler.annotation;
 
 import org.walter.orm.annotation.Param;
 import org.walter.orm.annotation.Update;
-import org.walter.orm.core.model.AbstractBaseSqlSetExecutor;
+import org.walter.orm.core.model.AbstractSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetParser;
 import org.walter.orm.throwable.SqlSetException;
 import org.walter.orm.util.ReflectionUtil;
@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandler {
     @Override
-    public Object handle(AbstractSqlSetParser parser, AbstractBaseSqlSetExecutor executor, Object[] args, Object... extras) {
+    public Object handle(AbstractSqlSetParser parser, AbstractSqlSetExecutor executor, Object[] args, Object... extras) {
         return super.handle(parser, executor, args, extras);
     }
 
