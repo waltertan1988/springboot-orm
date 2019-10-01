@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class DeleteNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
+public class DeleteNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         return doDelete(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), args[0]);

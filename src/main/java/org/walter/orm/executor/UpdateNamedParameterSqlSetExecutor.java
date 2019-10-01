@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class UpdateNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
+public class UpdateNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         Map<String, Object> mapParam = (Map<String, Object>) args[0];

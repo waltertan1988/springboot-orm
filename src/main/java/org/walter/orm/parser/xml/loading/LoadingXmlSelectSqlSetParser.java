@@ -1,9 +1,7 @@
-package org.walter.orm.parser.xml;
+package org.walter.orm.parser.xml.loading;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.walter.orm.core.constant.Constants;
 import org.walter.orm.core.model.AbstractSqlSet;
@@ -12,17 +10,13 @@ import org.walter.orm.throwable.SqlSetException;
 
 import java.util.HashMap;
 
-@Lazy
-@Slf4j
 @Component
-public class XmlSelectSqlSetParser extends AbstractXmlSqlSetParser {
+public class LoadingXmlSelectSqlSetParser extends AbstractLoadingXmlSqlSetParser {
     @Override
-    public AbstractSqlSet parse(Object... extras) {
+    public AbstractSqlSet newSqlSetInstanceAndSpecialParse(Element select) {
         SelectSqlSet sqlSet = new SelectSqlSet();
 
         try{
-            Element select = (Element) extras[0];
-
             String _resultType = select.attributeValue(Constants.SqlSet.Select.RESULT_TYPE);
             if(StringUtils.isBlank(_resultType)){
                 _resultType = HashMap.class.getName();

@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.sql.DataSource;
 
-public abstract class AbstractIocSqlSetExecutor extends AbstractDataSourceSqlSetExecutor implements ApplicationContextAware {
+public abstract class AbstractIocDataSourceSqlSetExecutor extends AbstractDataSourceSqlSetExecutor implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -22,6 +22,6 @@ public abstract class AbstractIocSqlSetExecutor extends AbstractDataSourceSqlSet
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return AbstractIocSqlSetExecutor.class.isAssignableFrom(clz);
+        return AbstractIocDataSourceSqlSetExecutor.class.isAssignableFrom(clz);
     }
 }

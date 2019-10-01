@@ -2,6 +2,7 @@ package org.walter.orm.handler.annotation;
 
 import org.walter.orm.annotation.Param;
 import org.walter.orm.annotation.Update;
+import org.walter.orm.core.common.Decorator;
 import org.walter.orm.core.model.AbstractSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetParser;
 import org.walter.orm.throwable.SqlSetException;
@@ -14,15 +15,21 @@ import java.lang.reflect.Parameter;
 import java.util.Map;
 
 @Component
-public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandler {
+public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandler implements Decorator<Object[], Object[]> {
     @Override
     public Object handle(AbstractSqlSetParser parser, AbstractSqlSetExecutor executor, Object[] args, Object... extras) {
-        return super.handle(parser, executor, args, extras);
+        return super.handle(parser, executor, decorate(args, extras), extras);
     }
 
     @Override
-    protected Object[] wrapArgs(Object[] args, Object... extras) {
-        Method method = (Method) extras[1];
+    public Boolean support(Class<?> clz, Object... args) {
+        Method method = (Method) args[0];
+        return super.support(clz, args) && method.isAnnotationPresent(Update.class);
+    }
+
+    @Override
+    public Object[] decorate(Object[] object, Object[] params) {
+        Method method = (Method) object[1];
         Parameter[] parameters = method.getParameters();
         if(parameters.length != 2){
             throw new SqlSetException("Error args number");
@@ -31,9 +38,9 @@ public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandl
         Map<String, Object> entity = null, param = null;
         for (int i = 0; i < parameters.length; i++) {
             if(parameters[i].isAnnotationPresent(Param.class)){
-                param = ReflectionUtil.toMap(args[i], true);
+                param = ReflectionUtil.toMap(object[i], true);
             }else {
-                entity = ReflectionUtil.toMap(args[i], true);
+                entity = ReflectionUtil.toMap(object[i], true);
             }
         }
 
@@ -45,11 +52,5 @@ public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandl
         }
 
         return new Object[]{entity};
-    }
-
-    @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        Method method = (Method) args[0];
-        return super.support(clz, args) && method.isAnnotationPresent(Update.class);
     }
 }

@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class SelectNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
+public class SelectNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         SelectSqlSet selectSqlSet = (SelectSqlSet) sqlSet;

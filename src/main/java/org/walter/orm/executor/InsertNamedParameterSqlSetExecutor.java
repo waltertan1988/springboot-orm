@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class InsertNamedParameterSqlSetExecutor extends AbstractIocSqlSetExecutor {
+public class InsertNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
         InsertSqlSet insertSqlSet = (InsertSqlSet) sqlSet;

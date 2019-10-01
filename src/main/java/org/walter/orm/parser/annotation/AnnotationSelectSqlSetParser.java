@@ -1,7 +1,5 @@
 package org.walter.orm.parser.annotation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.walter.orm.annotation.Select;
@@ -13,9 +11,6 @@ import java.util.Collection;
 
 @Component
 public class AnnotationSelectSqlSetParser extends AbstractAnnotationSqlSetParser {
-    @Autowired
-    private ApplicationContext applicationContext;
-
     @Override
     public AbstractSqlSet parse(Object... extras) {
         Class<?> targetInterface = (Class<?>) extras[0];

@@ -14,10 +14,8 @@ public abstract class AbstractAnnotationSqlSetHandler extends AbstractSqlSetHand
         AbstractAnnotationSqlSetParser abstractAnnotationSqlSetParser = (AbstractAnnotationSqlSetParser) parser;
         Class<?> targetInterface = (Class<?>) extras[0];
         Method method = (Method) extras[1];
-        return executor.execute(abstractAnnotationSqlSetParser.parse(targetInterface, method), wrapArgs(args, extras));
+        return executor.execute(abstractAnnotationSqlSetParser.parse(targetInterface, method), args);
     }
-
-    protected abstract Object[] wrapArgs(Object[] args, Object... extras);
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
