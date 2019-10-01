@@ -3,9 +3,29 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.org/ORMSchema OrmSchema.xsd"
      dataSourceRef="dataSource">
 
-    <select id="listAllDepartment" dataSourceRef="dataSource" resultType="java.util.Collection" multiReturnElementType="org.walter.orm.repository.demo1.Demo1Domain">
+    <select id="listAllDepartmentByNameLike" dataSourceRef="dataSource" resultType="java.util.Collection" multiReturnElementType="org.walter.orm.repository.demo1.Demo1Domain">
         <![CDATA[
-            select * from department
+            select * from department where name like '%${name}%'
         ]]>
     </select>
+
+    <insert id="saveDepartment" dataSourceRef="dataSource" keyField="id">
+        <![CDATA[
+            insert into department(code, name) values (:code, :name)
+        ]]>
+    </insert>
+
+    <delete id="deleteDepartmentByIdGt" dataSourceRef="dataSource">
+        <![CDATA[
+            delete department where id > :id
+        ]]>
+    </delete>
+
+    <update id="updateObjectByObjectWithNull" dataSourceRef="dataSource">
+        <![CDATA[
+            update department set
+                name = <#if name == '_NULL'>null<#else>:name</#if>
+            where name <#if _name?? && _name == '_NULL'>is null<#else>=:_name</#if>
+        ]]>
+    </update>
 </sqlset>

@@ -17,18 +17,37 @@
                         </simpleContent>
                     </complexType>
                 </element>
-<!--                <element name="modify" minOccurs="0">-->
-<!--                    <complexType>-->
-<!--                        <simpleContent>-->
-<!--                            <extension base="string">-->
-<!--                                <attribute name="id" type="string" use="required"/>-->
-<!--                                <attribute name="dataSourceRef" type="string" use="optional"/>-->
-<!--                                <attribute name="parameterType" type="string" use="optional"/>-->
-<!--                                <attribute name="resultType" type="string" use="optional"/>-->
-<!--                            </extension>-->
-<!--                        </simpleContent>-->
-<!--                    </complexType>-->
-<!--                </element>-->
+                <element name="insert" minOccurs="0">
+                    <complexType>
+                        <simpleContent>
+                            <extension base="string">
+                                <attribute name="id" type="string" use="required"/>
+                                <attribute name="dataSourceRef" type="string" use="optional"/>
+                                <attribute name="keyField" type="string" use="optional"/>
+                            </extension>
+                        </simpleContent>
+                    </complexType>
+                </element>
+                <element name="delete" minOccurs="0">
+                    <complexType>
+                        <simpleContent>
+                            <extension base="string">
+                                <attribute name="id" type="string" use="required"/>
+                                <attribute name="dataSourceRef" type="string" use="optional"/>
+                            </extension>
+                        </simpleContent>
+                    </complexType>
+                </element>
+                <element name="update" minOccurs="0">
+                    <complexType>
+                        <simpleContent>
+                            <extension base="string">
+                                <attribute name="id" type="string" use="required"/>
+                                <attribute name="dataSourceRef" type="string" use="optional"/>
+                            </extension>
+                        </simpleContent>
+                    </complexType>
+                </element>
             </sequence>
             <attribute name="dataSourceRef" type="string" use="optional"/>
         </complexType>
