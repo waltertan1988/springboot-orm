@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 public class SqlSetHolder {
 
@@ -14,9 +15,9 @@ public class SqlSetHolder {
     private static List<Map<String, AbstractSqlSet>> sqlSetMapList = new ArrayList<>();
 
     static {
-        for (AbstractSqlSet.ConfigType value : AbstractSqlSet.ConfigType.values()) {
-            sqlSetMapList.add(new ConcurrentHashMap<>());
-        }
+        Stream.of(AbstractSqlSet.ConfigType.values())
+                .filter(configType -> !configType.equals(AbstractSqlSet.ConfigType.ANNOTATION))
+                .forEach(configType -> sqlSetMapList.add(new ConcurrentHashMap<>()));
     }
 
     public static boolean put(AbstractSqlSet sqlSet){

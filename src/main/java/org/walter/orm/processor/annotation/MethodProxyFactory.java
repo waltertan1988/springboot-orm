@@ -5,7 +5,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.walter.orm.executor.AbstractIocDataSourceSqlSetExecutor;
+import org.walter.orm.executor.operate.AbstractIocDataSourceSqlSetExecutor;
 import org.walter.orm.handler.annotation.AbstractAnnotationSqlSetHandler;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
 

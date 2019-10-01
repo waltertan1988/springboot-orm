@@ -1,4 +1,4 @@
-package org.walter.orm.executor;
+package org.walter.orm.executor.operate;
 
 import org.walter.orm.core.model.AbstractSqlSetExecutor;
 
