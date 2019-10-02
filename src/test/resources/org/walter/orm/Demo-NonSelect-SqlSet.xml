@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqlset xmlns="http://www.waltertan.org/ORMSchema"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.org/ORMSchema OrmSchema.xsd"
-     dataSourceRef="dataSource">
-
-    <select id="listAllDepartmentByNameLike" dataSourceRef="dataSource" resultType="java.util.Collection" multiReturnElementType="org.walter.orm.repository.demo1.Demo1Domain">
-        <![CDATA[
-            select * from department where name like '%${name}%'
-        ]]>
-    </select>
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.org/ORMSchema OrmSchema.xsd">
 
     <insert id="saveDepartment" dataSourceRef="dataSource" keyField="id">
         <![CDATA[

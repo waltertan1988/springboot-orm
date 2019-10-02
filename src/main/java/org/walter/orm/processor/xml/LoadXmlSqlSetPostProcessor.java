@@ -1,6 +1,7 @@
 package org.walter.orm.processor.xml;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -40,7 +41,8 @@ public class LoadXmlSqlSetPostProcessor implements BeanPostProcessor, SupportChe
         try{
             for (Resource res : configurableApplicationContext.getResources(SQLSET_XML_PATTERN)) {
                 Element sqlsetElement = new SAXReader().read(res.getFile()).getRootElement();
-                final String DEFAULT_DATASOURCE_REF = sqlsetElement.attributeValue(Constants.SqlSet.DATA_SOURCE_REF);
+                String dataSourceRefStr = sqlsetElement.attributeValue(Constants.SqlSet.DATA_SOURCE_REF);
+                final String DEFAULT_DATASOURCE_REF = StringUtils.isBlank(dataSourceRefStr) ? StringUtils.EMPTY : dataSourceRefStr;
                 sqlsetElement.elements().forEach(sqlElement -> loadingSqlSetHandler.handle(sqlElement, DEFAULT_DATASOURCE_REF));
             }
         }catch (IOException | DocumentException e){
