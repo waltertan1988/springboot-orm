@@ -10,7 +10,7 @@ import org.walter.orm.sqlset.SqlSetHolder;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class XmlOrmParserTests {
+public class XmlSqlSetParserTests {
 	@Test
 	public void testXmlOrmParser() {
 		SqlSetHolder.getSqlSetMapList().forEach(map -> {

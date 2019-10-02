@@ -34,6 +34,11 @@ public class SqlSetHolderSqlSetHandler extends AbstractSqlSetHandler {
     }
 
     @Override
+    protected Object[] toExecutorArgs(Object... args) {
+        return new Object[]{args[1]};
+    }
+
+    @Override
     protected AbstractSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args) {
         return executorList.stream().filter(e -> e.support(AbstractIocDataSourceSqlSetExecutor.class, sqlSet))
                 .findFirst().orElseThrow(() -> new SqlSetException("No executor found for SqlSet: ?", sqlSet));

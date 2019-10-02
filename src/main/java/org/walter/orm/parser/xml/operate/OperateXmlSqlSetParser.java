@@ -11,8 +11,8 @@ import java.util.Map;
 @Component
 public class OperateXmlSqlSetParser extends AbstractXmlSqlSetParser {
     @Override
-    public AbstractSqlSet parse(Object... extras) {
-        String id = (String) extras[0];
+    public AbstractSqlSet parse(Object... args) {
+        String id = (String) args[0];
         Map<String, AbstractSqlSet> sqlSetMap = SqlSetHolder.getSqlSetMapList().stream()
                 .filter(ssm -> ssm.containsKey(id))
                 .findFirst().orElseThrow(() -> new SqlSetException("No SqlSet found for id[{}]", id));
