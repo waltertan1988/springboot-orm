@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 
 public abstract class AbstractIocDataSourceSqlSetExecutor extends AbstractDataSourceSqlSetExecutor implements ApplicationContextAware {
 
-    private ApplicationContext applicationContext;
+    protected ApplicationContext applicationContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -21,7 +21,7 @@ public abstract class AbstractIocDataSourceSqlSetExecutor extends AbstractDataSo
     }
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        return AbstractIocDataSourceSqlSetExecutor.class.isAssignableFrom(clz);
+    public Boolean support(Class<?> executorType, Object... args) {
+        return AbstractIocDataSourceSqlSetExecutor.class.isAssignableFrom(executorType);
     }
 }

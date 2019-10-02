@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
 @Component
 public class AnnotationDeleteSqlSetParser extends AbstractAnnotationSqlSetParser {
     @Override
-    public AbstractSqlSet parse(Object... extras) {
-        Class<?> targetInterface = (Class<?>) extras[0];
-        Method method = (Method) extras[1];
+    public AbstractSqlSet parse(Object... args) {
+        Class<?> targetInterface = (Class<?>) args[0];
+        Method method = (Method) args[1];
         Delete delete = AnnotationUtils.getAnnotation(method, Delete.class);
         String sqlStatement = delete.statement();
         String datasource = getDataSourceName(targetInterface, delete);
@@ -21,8 +21,7 @@ public class AnnotationDeleteSqlSetParser extends AbstractAnnotationSqlSetParser
     }
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        Method method = (Method) args[0];
-        return super.support(clz, method) && method.isAnnotationPresent(Delete.class);
+    protected Boolean support(Method method) {
+        return method.isAnnotationPresent(Delete.class);
     }
 }

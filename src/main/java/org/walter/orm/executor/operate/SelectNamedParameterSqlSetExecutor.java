@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
-import org.walter.orm.annotation.Select;
 import org.walter.orm.core.model.AbstractSqlSet;
 import org.walter.orm.sqlset.SelectSqlSet;
 import org.walter.orm.throwable.SqlSetException;
@@ -16,7 +15,6 @@ import org.walter.orm.util.FreemarkerUtil;
 import org.walter.orm.util.ReflectionUtil;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -82,9 +80,9 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
     }
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        Method method = (Method) args[0];
-        return super.support(clz, method) && method.isAnnotationPresent(Select.class);
+    public Boolean support(Class<?> executorType, Object...args) {
+        AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
+        return super.support(executorType, sqlSet) && (sqlSet instanceof SelectSqlSet);
     }
 
     @Override

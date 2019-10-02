@@ -4,13 +4,27 @@ import org.walter.orm.core.common.SupportChecker;
 
 public abstract class AbstractSqlSetHandler implements SupportChecker {
 
-    public Object handle(AbstractSqlSetParser parser, AbstractSqlSetExecutor executor, Object[] args, Object... extras){
-        AbstractSqlSet sqlSet = parser.parse();
-        return executor.execute(sqlSet, args);
+    public Object handle(Object... args){
+        checkArgs(args);
+        AbstractSqlSetParser parser = getSqlSetParser(args);
+        AbstractSqlSet sqlSet = parser.parse(args);
+        AbstractSqlSetExecutor executor = getSqlSetExecutor(sqlSet, args);
+        Object[] executorArgs = toExecutorArgs(args);
+        return executor.execute(sqlSet, executorArgs);
     }
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        return AbstractSqlSetHandler.class.isAssignableFrom(clz);
+    public Boolean support(Class<?> handlerType, Object... args) {
+        return AbstractSqlSetHandler.class.isAssignableFrom(handlerType);
     }
+
+    protected abstract void checkArgs(Object... args);
+
+    protected Object[] toExecutorArgs(Object... args){
+        return args;
+    }
+
+    protected abstract AbstractSqlSetParser getSqlSetParser(Object... args);
+
+    protected abstract AbstractSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args);
 }

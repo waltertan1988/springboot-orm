@@ -6,12 +6,11 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
-import org.walter.orm.annotation.Update;
 import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.sqlset.UpdateSqlSet;
 import org.walter.orm.util.FreemarkerUtil;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 @Slf4j
@@ -32,8 +31,8 @@ public class UpdateNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
     }
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        Method method = (Method) args[0];
-        return super.support(clz, method) && method.isAnnotationPresent(Update.class);
+    public Boolean support(Class<?> executorType, Object...args) {
+        AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
+        return super.support(executorType, sqlSet) && (sqlSet instanceof UpdateSqlSet);
     }
 }

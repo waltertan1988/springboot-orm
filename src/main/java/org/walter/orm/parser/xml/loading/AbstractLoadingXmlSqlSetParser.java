@@ -11,9 +11,9 @@ public abstract class AbstractLoadingXmlSqlSetParser extends AbstractXmlSqlSetPa
     private final String SQLSET_COMMENT_PATTERN = "<!--.*-->";
 
     @Override
-    public AbstractSqlSet parse(Object... extras) {
-        Element sqlElement = (Element) extras[0];
-        final String DEFAULT_DATA_SOURCE_REF = (String) extras[1];
+    public AbstractSqlSet parse(Object... args) {
+        Element sqlElement = (Element) args[0];
+        final String DEFAULT_DATA_SOURCE_REF = (String) args[1];
         String id = sqlElement.attributeValue(Constants.SqlSet.ID);
         String statement = sqlElement.getText().replaceAll(SQLSET_COMMENT_PATTERN, "").trim();
         String datasource = DEFAULT_DATA_SOURCE_REF;

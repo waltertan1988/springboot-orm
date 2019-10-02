@@ -16,10 +16,10 @@ public abstract class AbstractSqlSetExecutor implements SupportChecker {
         log.debug("args: {}", args);
     }
 
-    protected abstract Object doExecute(AbstractSqlSet sqlSet, Object[] args);
-
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        return AbstractSqlSetExecutor.class.isAssignableFrom(clz);
+    public Boolean support(Class<?> executorType, Object... args) {
+        return AbstractSqlSetExecutor.class.isAssignableFrom(executorType);
     }
+
+    protected abstract Object doExecute(AbstractSqlSet sqlSet, Object[] args);
 }

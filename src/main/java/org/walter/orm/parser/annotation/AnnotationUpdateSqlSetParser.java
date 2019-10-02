@@ -21,8 +21,7 @@ public class AnnotationUpdateSqlSetParser extends AbstractAnnotationSqlSetParser
     }
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        Method method = (Method) args[0];
-        return super.support(clz, method) && method.isAnnotationPresent(Update.class);
+    protected Boolean support(Method method) {
+        return method.isAnnotationPresent(Update.class);
     }
 }

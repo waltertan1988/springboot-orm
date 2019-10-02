@@ -9,7 +9,7 @@ public abstract class AbstractDataSourceSqlSetExecutor extends AbstractSqlSetExe
     protected abstract DataSource getDataSource(String dataSourceRef);
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        return AbstractDataSourceSqlSetExecutor.class.isAssignableFrom(clz);
+    public Boolean support(Class<?> executorType, Object... args) {
+        return AbstractDataSourceSqlSetExecutor.class.isAssignableFrom(executorType);
     }
 }

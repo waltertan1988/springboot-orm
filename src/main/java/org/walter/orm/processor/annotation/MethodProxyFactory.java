@@ -5,9 +5,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.walter.orm.executor.operate.AbstractIocDataSourceSqlSetExecutor;
 import org.walter.orm.handler.annotation.AbstractAnnotationSqlSetHandler;
-import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
 
 import java.lang.annotation.*;
 import java.lang.reflect.InvocationHandler;
@@ -39,17 +37,11 @@ public class MethodProxyFactory implements FactoryBean, InvocationHandler, Appli
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        AbstractAnnotationSqlSetParser parser = applicationContext.getBeansOfType(AbstractAnnotationSqlSetParser.class)
-                .values().stream().filter(p -> p.support(p.getClass(), method)).findFirst().get();
-
-        AbstractIocDataSourceSqlSetExecutor executor = applicationContext.getBeansOfType(AbstractIocDataSourceSqlSetExecutor.class)
-                .values().stream().filter(e -> e.support(e.getClass(), method)).findFirst().get();
-
+    public Object invoke(Object proxy, Method method, Object[] args) {
         AbstractAnnotationSqlSetHandler handler = applicationContext.getBeansOfType(AbstractAnnotationSqlSetHandler.class)
                 .values().stream().filter(h -> h.support(h.getClass(), method)).findFirst().get();
 
-        return handler.handle(parser, executor, args, targetInterface, method);
+        return handler.handle(targetInterface, method, args);
     }
 
     @SuppressWarnings("unused")

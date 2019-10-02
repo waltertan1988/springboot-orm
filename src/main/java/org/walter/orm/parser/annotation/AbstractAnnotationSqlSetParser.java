@@ -9,6 +9,7 @@ import org.walter.orm.core.model.AbstractSqlSetParser;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @Slf4j
 public abstract class AbstractAnnotationSqlSetParser extends AbstractSqlSetParser {
@@ -24,7 +25,10 @@ public abstract class AbstractAnnotationSqlSetParser extends AbstractSqlSetParse
     }
 
     @Override
-    public Boolean support(Class<?> clz, Object... args) {
-        return AbstractAnnotationSqlSetParser.class.isAssignableFrom(clz);
+    public Boolean support(Class<?> parserType, Object... args) {
+        Method method = (Method) args[0];
+        return AbstractAnnotationSqlSetParser.class.isAssignableFrom(parserType) && support(method);
     }
+
+    protected abstract Boolean support(Method method);
 }

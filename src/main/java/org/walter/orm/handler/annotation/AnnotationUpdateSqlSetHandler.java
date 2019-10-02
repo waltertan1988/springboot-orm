@@ -1,24 +1,33 @@
 package org.walter.orm.handler.annotation;
 
-import org.walter.orm.annotation.Param;
-import org.walter.orm.annotation.Update;
-import org.walter.orm.core.common.Decorator;
-import org.walter.orm.core.model.AbstractSqlSetExecutor;
-import org.walter.orm.core.model.AbstractSqlSetParser;
-import org.walter.orm.throwable.SqlSetException;
-import org.walter.orm.util.ReflectionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.walter.orm.annotation.Param;
+import org.walter.orm.annotation.Update;
+import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.executor.operate.AbstractDataSourceSqlSetExecutor;
+import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
+import org.walter.orm.throwable.SqlSetException;
+import org.walter.orm.util.ReflectionUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 
 @Component
-public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandler implements Decorator<Object[], Object[]> {
+public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandler {
+    @Autowired
+    private AnnotationDefaultSqlSetHandler annotationDefaultSqlSetHandler;
+
     @Override
-    public Object handle(AbstractSqlSetParser parser, AbstractSqlSetExecutor executor, Object[] args, Object... extras) {
-        return super.handle(parser, executor, decorate(args, extras), extras);
+    protected AbstractAnnotationSqlSetParser getSqlSetParser(Method method) {
+        return annotationDefaultSqlSetHandler.getSqlSetParser(method);
+    }
+
+    @Override
+    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet) {
+        return annotationDefaultSqlSetHandler.getSqlSetExecutor(sqlSet);
     }
 
     @Override
@@ -28,19 +37,20 @@ public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandl
     }
 
     @Override
-    public Object[] decorate(Object[] object, Object[] params) {
-        Method method = (Method) object[1];
+    public Object[] toExecutorArgs(Object...args) {
+        Method method = (Method) args[1];
+        Object[] methodArgs = (Object[]) args[INVOKE_METHOD_ARGS_IDX];
         Parameter[] parameters = method.getParameters();
         if(parameters.length != 2){
-            throw new SqlSetException("Error args number");
+            throw new SqlSetException("Invoked method should have 2 args.");
         }
 
         Map<String, Object> entity = null, param = null;
         for (int i = 0; i < parameters.length; i++) {
             if(parameters[i].isAnnotationPresent(Param.class)){
-                param = ReflectionUtil.toMap(object[i], true);
+                param = ReflectionUtil.toMap(methodArgs[i], true);
             }else {
-                entity = ReflectionUtil.toMap(object[i], true);
+                entity = ReflectionUtil.toMap(methodArgs[i], true);
             }
         }
 
