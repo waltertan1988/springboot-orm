@@ -51,12 +51,4 @@
             update department set code = :code where code = :_code
         ]]>
     </update>
-
-    <update id="updateObjectByObjectWithNull" dataSourceRef="dataSource">
-        <![CDATA[
-            update department set
-                name = <#if name == '_NULL'>null<#else>:name</#if>
-            where name <#if _name?? && _name == '_NULL'>is null<#else>=:_name</#if>
-        ]]>
-    </update>
 </sqlset>
