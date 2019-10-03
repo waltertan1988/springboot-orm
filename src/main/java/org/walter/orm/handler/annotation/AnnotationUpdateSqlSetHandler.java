@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.walter.orm.annotation.Param;
 import org.walter.orm.annotation.Update;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.executor.operate.AbstractDataSourceSqlSetExecutor;
 import org.walter.orm.executor.operate.UpdateNamedParameterSqlSetExecutor;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
@@ -30,7 +30,7 @@ public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandl
     }
 
     @Override
-    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args) {
+    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(SqlSet sqlSet, Object... args) {
         return executor;
     }
 

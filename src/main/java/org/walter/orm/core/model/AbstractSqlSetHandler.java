@@ -7,7 +7,7 @@ public abstract class AbstractSqlSetHandler implements SupportChecker {
     public Object handle(Object... args){
         checkArgs(args);
         AbstractSqlSetParser parser = getSqlSetParser(args);
-        AbstractSqlSet sqlSet = parser.parse(args);
+        SqlSet sqlSet = parser.parse(args);
         AbstractSqlSetExecutor executor = getSqlSetExecutor(sqlSet, args);
         Object[] executorArgs = toExecutorArgs(args);
         return executor.execute(sqlSet, executorArgs);
@@ -26,5 +26,5 @@ public abstract class AbstractSqlSetHandler implements SupportChecker {
 
     protected abstract AbstractSqlSetParser getSqlSetParser(Object... args);
 
-    protected abstract AbstractSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args);
+    protected abstract AbstractSqlSetExecutor getSqlSetExecutor(SqlSet sqlSet, Object... args);
 }

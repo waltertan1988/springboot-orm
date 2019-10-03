@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.util.FreemarkerUtil;
 
 import javax.sql.DataSource;
@@ -16,7 +16,7 @@ import java.util.Map;
 @Component
 public class UpdateNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
+    public Object doExecute(SqlSet sqlSet, Object[] args) {
         Map<String, Object> mapParam = (Map<String, Object>) args[0];
         return doUpdate(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), mapParam);
     }
@@ -31,7 +31,7 @@ public class UpdateNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
 
     @Override
     public Boolean support(Class<?> executorType, Object...args) {
-        AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
-        return super.support(executorType, sqlSet) && (AbstractSqlSet.SqlType.UPDATE.equals(sqlSet.getSqlType()));
+        SqlSet sqlSet = (SqlSet) args[0];
+        return super.support(executorType, sqlSet) && (SqlSet.SqlType.UPDATE.equals(sqlSet.getSqlType()));
     }
 }

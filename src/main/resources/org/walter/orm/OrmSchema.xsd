@@ -11,8 +11,6 @@
                             <extension base="string">
                                 <attribute name="id" type="string" use="required"/>
                                 <attribute name="dataSourceRef" type="string" use="optional"/>
-                                <attribute name="resultType" type="string" use="optional"/>
-                                <attribute name="multiReturnElementType" type="string" use="optional"/>
                             </extension>
                         </simpleContent>
                     </complexType>
@@ -23,7 +21,6 @@
                             <extension base="string">
                                 <attribute name="id" type="string" use="required"/>
                                 <attribute name="dataSourceRef" type="string" use="optional"/>
-                                <attribute name="keyField" type="string" use="optional"/>
                             </extension>
                         </simpleContent>
                     </complexType>

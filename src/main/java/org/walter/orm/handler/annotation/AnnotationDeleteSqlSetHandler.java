@@ -3,7 +3,7 @@ package org.walter.orm.handler.annotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.walter.orm.annotation.Delete;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.executor.operate.AbstractDataSourceSqlSetExecutor;
 import org.walter.orm.executor.operate.DeleteNamedParameterSqlSetExecutor;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
@@ -24,7 +24,7 @@ public class AnnotationDeleteSqlSetHandler extends AbstractAnnotationSqlSetHandl
     }
 
     @Override
-    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args) {
+    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(SqlSet sqlSet, Object... args) {
         return executor;
     }
 

@@ -3,7 +3,7 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.org/ORMSchema OrmSchema.xsd"
      dataSourceRef="dataSource">
 
-    <select id="listAllDepartmentByCodeLike" resultType="java.util.Collection" multiReturnElementType="org.walter.orm.repository.demo1.Demo1Domain">
+    <select id="listAllDepartmentByCodeLike">
         <![CDATA[
             select * from department where code like '%${code}%'
         ]]>

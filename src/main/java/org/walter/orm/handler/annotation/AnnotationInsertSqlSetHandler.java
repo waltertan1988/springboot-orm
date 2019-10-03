@@ -4,7 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.walter.orm.annotation.Insert;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.executor.operate.AbstractDataSourceSqlSetExecutor;
 import org.walter.orm.executor.operate.InsertNamedParameterSqlSetExecutor;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
@@ -25,7 +25,7 @@ public class AnnotationInsertSqlSetHandler extends AbstractAnnotationSqlSetHandl
     }
 
     @Override
-    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args) {
+    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(SqlSet sqlSet, Object... args) {
         return executor;
     }
 

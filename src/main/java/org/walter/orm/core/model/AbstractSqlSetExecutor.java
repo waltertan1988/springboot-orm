@@ -5,12 +5,12 @@ import org.walter.orm.core.common.SupportChecker;
 
 @Slf4j
 public abstract class AbstractSqlSetExecutor implements SupportChecker {
-    public Object execute(AbstractSqlSet sqlSet, Object[] args){
+    public Object execute(SqlSet sqlSet, Object[] args){
         preExecute(sqlSet, args);
         return doExecute(sqlSet, args);
     }
 
-    protected void preExecute(AbstractSqlSet sqlSet, Object[] args){
+    protected void preExecute(SqlSet sqlSet, Object[] args){
         log.debug("id: {}, datasource: {}", sqlSet.getId(), sqlSet.getDataSource());
         log.debug("statement: {}", sqlSet.getStatement());
         log.debug("args: {}", args);
@@ -21,5 +21,5 @@ public abstract class AbstractSqlSetExecutor implements SupportChecker {
         return AbstractSqlSetExecutor.class.isAssignableFrom(executorType);
     }
 
-    protected abstract Object doExecute(AbstractSqlSet sqlSet, Object[] args);
+    protected abstract Object doExecute(SqlSet sqlSet, Object[] args);
 }

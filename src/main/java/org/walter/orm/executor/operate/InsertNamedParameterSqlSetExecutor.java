@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.throwable.SqlSetException;
 import org.walter.orm.util.FreemarkerUtil;
 import org.walter.orm.util.ReflectionUtil;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 public class InsertNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
+    public Object doExecute(SqlSet sqlSet, Object[] args) {
         if(ArrayUtils.isEmpty(args) || args.length < 2){
             throw new SqlSetException("Invalid args: %s", args);
         }
@@ -58,7 +58,7 @@ public class InsertNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
     }
 
     @Override
-    protected void preExecute(AbstractSqlSet sqlSet, Object[] args) {
+    protected void preExecute(SqlSet sqlSet, Object[] args) {
         super.preExecute(sqlSet, args);
         if(args != null && args.length > 2 && !(args[0] instanceof Map) && !ReflectionUtil.isCustomClass(args[0].getClass())){
             throw new SqlSetException("Method arg should be Map or POJO");
@@ -67,7 +67,7 @@ public class InsertNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
 
     @Override
     public Boolean support(Class<?> executorType, Object...args) {
-        AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
-        return super.support(executorType, sqlSet) && (AbstractSqlSet.SqlType.INSERT.equals(sqlSet.getSqlType()));
+        SqlSet sqlSet = (SqlSet) args[0];
+        return super.support(executorType, sqlSet) && (SqlSet.SqlType.INSERT.equals(sqlSet.getSqlType()));
     }
 }

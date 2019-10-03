@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.walter.orm.sqlset.SqlSetHolder;
+import org.walter.orm.core.model.SqlSetHolder;
 
 @Slf4j
 @RunWith(SpringRunner.class)

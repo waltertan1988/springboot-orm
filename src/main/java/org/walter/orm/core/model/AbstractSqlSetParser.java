@@ -8,5 +8,5 @@ public abstract class AbstractSqlSetParser implements SupportChecker {
         return AbstractSqlSetParser.class.isAssignableFrom(parserType);
     }
 
-    public abstract AbstractSqlSet parse(Object... args);
+    public abstract SqlSet parse(Object... args);
 }

@@ -14,9 +14,9 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 import org.walter.orm.core.common.SupportChecker;
 import org.walter.orm.core.constant.Constants;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.handler.loading.LoadingSqlSetHandler;
-import org.walter.orm.sqlset.SqlSetHolder;
+import org.walter.orm.core.model.SqlSetHolder;
 import org.walter.orm.throwable.SqlSetException;
 
 import java.io.IOException;
@@ -54,6 +54,6 @@ public class LoadXmlSqlSetPostProcessor implements BeanPostProcessor, SupportChe
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return SqlSetHolder.isEmpty(AbstractSqlSet.ConfigType.XML);
+        return SqlSetHolder.isEmpty(SqlSet.ConfigType.XML);
     }
 }

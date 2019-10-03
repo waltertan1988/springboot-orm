@@ -2,7 +2,7 @@
 <sqlset xmlns="http://www.waltertan.org/ORMSchema"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.org/ORMSchema OrmSchema.xsd">
 
-    <insert id="saveDepartment" dataSourceRef="dataSource" keyField="id">
+    <insert id="saveDepartment" dataSourceRef="dataSource">
         <![CDATA[
             insert into department(code, name) values (:code, :name)
         ]]>

@@ -4,7 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.core.model.AbstractSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetHandler;
 import org.walter.orm.core.model.AbstractSqlSetParser;
@@ -33,7 +33,7 @@ public class LoadingSqlSetHandler extends AbstractSqlSetHandler {
     }
 
     @Override
-    protected AbstractSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args) {
+    protected AbstractSqlSetExecutor getSqlSetExecutor(SqlSet sqlSet, Object... args) {
         return loadingSqlSetExecutor;
     }
 

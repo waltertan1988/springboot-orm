@@ -1,6 +1,4 @@
-package org.walter.orm.sqlset;
-
-import org.walter.orm.core.model.AbstractSqlSet;
+package org.walter.orm.core.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +10,16 @@ public class SqlSetHolder {
 
     private SqlSetHolder(){}
 
-    private static List<Map<String, AbstractSqlSet>> sqlSetMapList = new ArrayList<>();
+    private static List<Map<String, SqlSet>> sqlSetMapList = new ArrayList<>();
 
     static {
-        Stream.of(AbstractSqlSet.ConfigType.values())
-                .filter(configType -> !configType.equals(AbstractSqlSet.ConfigType.ANNOTATION))
+        Stream.of(SqlSet.ConfigType.values())
+                .filter(configType -> !configType.equals(SqlSet.ConfigType.ANNOTATION))
                 .forEach(configType -> sqlSetMapList.add(new ConcurrentHashMap<>()));
     }
 
-    public static boolean put(AbstractSqlSet sqlSet){
-        Map<String, AbstractSqlSet> map = sqlSetMapList.get(sqlSet.getConfigType().ordinal());
+    public static boolean put(SqlSet sqlSet){
+        Map<String, SqlSet> map = sqlSetMapList.get(sqlSet.getConfigType().ordinal());
         if(map.containsKey(sqlSet.getId())){
             return false;
         }
@@ -29,37 +27,37 @@ public class SqlSetHolder {
         return true;
     }
 
-    public static AbstractSqlSet get(AbstractSqlSet.ConfigType type, String id){
+    public static SqlSet get(SqlSet.ConfigType type, String id){
         return sqlSetMapList.get(type.ordinal()).get(id);
     }
 
-    public static void remove(AbstractSqlSet.ConfigType type, String id){
+    public static void remove(SqlSet.ConfigType type, String id){
         sqlSetMapList.get(type.ordinal()).remove(id);
     }
 
-    public static void clear(AbstractSqlSet.ConfigType type){
+    public static void clear(SqlSet.ConfigType type){
         sqlSetMapList.get(type.ordinal()).clear();
     }
 
     public static void clear() {
-        for (Map<String, AbstractSqlSet> sqlSetMap : sqlSetMapList) {
+        for (Map<String, SqlSet> sqlSetMap : sqlSetMapList) {
             sqlSetMap.clear();
         }
     }
 
-    public static Integer size(AbstractSqlSet.ConfigType type){
+    public static Integer size(SqlSet.ConfigType type){
         return sqlSetMapList.get(type.ordinal()).size();
     }
 
     public static Integer size() {
         int total = 0;
-        for (Map<String, AbstractSqlSet> sqlSetMap : sqlSetMapList) {
+        for (Map<String, SqlSet> sqlSetMap : sqlSetMapList) {
             total += sqlSetMap.size();
         }
         return total;
     }
 
-    public static Boolean isEmpty(AbstractSqlSet.ConfigType type){
+    public static Boolean isEmpty(SqlSet.ConfigType type){
         return size(type) == 0;
     }
 
@@ -67,7 +65,7 @@ public class SqlSetHolder {
         return size() == 0;
     }
 
-    public static List<Map<String, AbstractSqlSet>> getSqlSetMapList(){
+    public static List<Map<String, SqlSet>> getSqlSetMapList(){
         return sqlSetMapList;
     }
 }

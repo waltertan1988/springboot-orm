@@ -9,7 +9,7 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AbstractSqlSet {
+public class SqlSet {
     protected String id;
     @NonNull
     protected ConfigType configType;
@@ -40,7 +40,7 @@ public class AbstractSqlSet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractSqlSet sqlSet = (AbstractSqlSet) o;
+        SqlSet sqlSet = (SqlSet) o;
         return Objects.equals(id, sqlSet.id) &&
                 configType == sqlSet.configType;
     }

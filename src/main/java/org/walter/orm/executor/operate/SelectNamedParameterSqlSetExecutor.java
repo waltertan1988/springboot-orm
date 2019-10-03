@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
-import org.walter.orm.core.model.AbstractSqlSet;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.throwable.SqlSetException;
 import org.walter.orm.util.FreemarkerUtil;
 import org.walter.orm.util.ReflectionUtil;
@@ -24,7 +24,7 @@ import java.util.Map;
 @Component
 public class SelectNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
-    public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
+    public Object doExecute(SqlSet sqlSet, Object[] args) {
         if(ArrayUtils.isEmpty(args) || args.length < 2){
             throw new SqlSetException("Invalid args: %s", args);
         }
@@ -82,12 +82,12 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
 
     @Override
     public Boolean support(Class<?> executorType, Object...args) {
-        AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
-        return super.support(executorType, sqlSet) && AbstractSqlSet.SqlType.SELECT.equals(sqlSet.getSqlType());
+        SqlSet sqlSet = (SqlSet) args[0];
+        return super.support(executorType, sqlSet) && SqlSet.SqlType.SELECT.equals(sqlSet.getSqlType());
     }
 
     @Override
-    protected void preExecute(AbstractSqlSet sqlSet, Object[] args) {
+    protected void preExecute(SqlSet sqlSet, Object[] args) {
         super.preExecute(sqlSet, args);
         if(args != null && args.length > 3){
             throw new SqlSetException("Method arg should be Void, Map or POJO");
