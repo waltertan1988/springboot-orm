@@ -11,9 +11,12 @@ public abstract class AbstractSqlSetExecutor implements SupportChecker {
     }
 
     protected void preExecute(SqlSet sqlSet, Object[] args){
-        log.debug("id: {}, datasource: {}", sqlSet.getId(), sqlSet.getDataSource());
+        log.debug("id: {}", sqlSet.getId());
+        log.debug("datasource: {}", sqlSet.getDataSource());
         log.debug("statement: {}", sqlSet.getStatement());
-        log.debug("args: {}", args);
+        for (int i = 0; i < args.length; i++) {
+            log.debug("args[{}]: {}", i, args[i]);
+        }
     }
 
     @Override

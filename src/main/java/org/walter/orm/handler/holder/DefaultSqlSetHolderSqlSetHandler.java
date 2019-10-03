@@ -11,10 +11,11 @@ import org.walter.orm.executor.operate.AbstractIocDataSourceSqlSetExecutor;
 import org.walter.orm.parser.xml.operate.OperateXmlSqlSetParser;
 import org.walter.orm.throwable.SqlSetException;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class SqlSetHolderSqlSetHandler extends AbstractSqlSetHandler {
+public class DefaultSqlSetHolderSqlSetHandler extends AbstractSqlSetHandler {
     @Autowired
     private OperateXmlSqlSetParser parser;
     @Autowired
@@ -22,10 +23,10 @@ public class SqlSetHolderSqlSetHandler extends AbstractSqlSetHandler {
 
     @Override
     protected void checkArgs(Object... args) {
-        if(ArrayUtils.isNotEmpty(args) && args.length == 2 && args[0] instanceof String){
+        if(ArrayUtils.isNotEmpty(args) && args[0] instanceof String){
             return;
         }
-        throw new SqlSetException("Invalid args: ?", args);
+        throw new SqlSetException("Invalid args: %s", args);
     }
 
     @Override
@@ -35,17 +36,17 @@ public class SqlSetHolderSqlSetHandler extends AbstractSqlSetHandler {
 
     @Override
     protected Object[] toExecutorArgs(Object... args) {
-        return new Object[]{args[1]};
+        return Arrays.copyOfRange(args, 1, args.length);
     }
 
     @Override
     protected AbstractSqlSetExecutor getSqlSetExecutor(SqlSet sqlSet, Object... args) {
         return executorList.stream().filter(e -> e.support(AbstractIocDataSourceSqlSetExecutor.class, sqlSet))
-                .findFirst().orElseThrow(() -> new SqlSetException("No executor found for SqlSet: ?", sqlSet));
+                .findFirst().orElseThrow(() -> new SqlSetException("No executor found for SqlSet: %s", sqlSet));
     }
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return SqlSetHolderSqlSetHandler.class.isAssignableFrom(clz);
+        return DefaultSqlSetHolderSqlSetHandler.class.isAssignableFrom(clz);
     }
 }
