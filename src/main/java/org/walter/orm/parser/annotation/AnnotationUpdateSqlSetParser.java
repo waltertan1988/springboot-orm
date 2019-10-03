@@ -4,7 +4,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.walter.orm.annotation.Update;
 import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.UpdateSqlSet;
 
 import java.lang.reflect.Method;
 
@@ -17,7 +16,7 @@ public class AnnotationUpdateSqlSetParser extends AbstractAnnotationSqlSetParser
         Update update = AnnotationUtils.getAnnotation(method, Update.class);
         String dataSource = getDataSourceName(targetInterface, update);
         String sqlStatement = update.statement();
-        return new UpdateSqlSet(null, AbstractSqlSet.ConfigType.ANNOTATION, dataSource, sqlStatement);
+        return new AbstractSqlSet(null, AbstractSqlSet.ConfigType.ANNOTATION, AbstractSqlSet.SqlType.UPDATE, dataSource, sqlStatement);
     }
 
     @Override

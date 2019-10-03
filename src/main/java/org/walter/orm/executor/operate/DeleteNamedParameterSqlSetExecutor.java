@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.DeleteSqlSet;
 import org.walter.orm.throwable.SqlSetException;
 import org.walter.orm.util.FreemarkerUtil;
 import org.walter.orm.util.ReflectionUtil;
@@ -42,7 +41,7 @@ public class DeleteNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
     @Override
     public Boolean support(Class<?> executorType, Object...args) {
         AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
-        return super.support(executorType, sqlSet) && (sqlSet instanceof DeleteSqlSet);
+        return super.support(executorType, sqlSet) && (AbstractSqlSet.SqlType.DELETE.equals(sqlSet.getSqlType()));
     }
 
     @Override

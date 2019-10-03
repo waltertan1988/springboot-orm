@@ -9,15 +9,13 @@ import org.walter.orm.core.model.AbstractSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetHandler;
 import org.walter.orm.core.model.AbstractSqlSetParser;
 import org.walter.orm.executor.loading.LoadingSqlSetExecutor;
-import org.walter.orm.parser.xml.loading.AbstractLoadingXmlSqlSetParser;
+import org.walter.orm.parser.xml.loading.LoadingXmlSqlSetParser;
 import org.walter.orm.throwable.SqlSetException;
-
-import java.util.List;
 
 @Component
 public class LoadingSqlSetHandler extends AbstractSqlSetHandler {
     @Autowired
-    private List<AbstractLoadingXmlSqlSetParser> loadingXmlSqlSetParserList;
+    private LoadingXmlSqlSetParser loadingXmlSqlSetParser;
     @Autowired
     private LoadingSqlSetExecutor loadingSqlSetExecutor;
 
@@ -31,10 +29,7 @@ public class LoadingSqlSetHandler extends AbstractSqlSetHandler {
 
     @Override
     protected AbstractSqlSetParser getSqlSetParser(Object... args) {
-        Element element = (Element) args[0];
-        return loadingXmlSqlSetParserList.stream()
-                .filter(p -> p.support(AbstractLoadingXmlSqlSetParser.class, element)).findFirst()
-                .orElseThrow(() -> new SqlSetException("No supported SqlSet parser found for element: ?", element));
+        return loadingXmlSqlSetParser;
     }
 
     @Override

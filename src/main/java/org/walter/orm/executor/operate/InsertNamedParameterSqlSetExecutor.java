@@ -1,6 +1,7 @@
 package org.walter.orm.executor.operate;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -11,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.InsertSqlSet;
 import org.walter.orm.throwable.SqlSetException;
 import org.walter.orm.util.FreemarkerUtil;
 import org.walter.orm.util.ReflectionUtil;
@@ -24,8 +24,12 @@ import java.util.Map;
 public class InsertNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
-        InsertSqlSet insertSqlSet = (InsertSqlSet) sqlSet;
-        return doInsert(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), args[0], insertSqlSet.getKeyField());
+        if(ArrayUtils.isEmpty(args) || args.length < 2){
+            throw new SqlSetException("Invalid args: %s", args);
+        }
+
+        String keyField = (String) args[0];
+        return doInsert(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), args[1], keyField);
     }
 
     private int doInsert(DataSource dataSource, String statement, Object param, String keyField) {
@@ -56,7 +60,7 @@ public class InsertNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
     @Override
     protected void preExecute(AbstractSqlSet sqlSet, Object[] args) {
         super.preExecute(sqlSet, args);
-        if(args != null && args.length != 1 && !(args[0] instanceof Map) && !ReflectionUtil.isCustomClass(args[0].getClass())){
+        if(args != null && args.length > 2 && !(args[0] instanceof Map) && !ReflectionUtil.isCustomClass(args[0].getClass())){
             throw new SqlSetException("Method arg should be Map or POJO");
         }
     }
@@ -64,6 +68,6 @@ public class InsertNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
     @Override
     public Boolean support(Class<?> executorType, Object...args) {
         AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
-        return super.support(executorType, sqlSet) && (sqlSet instanceof InsertSqlSet);
+        return super.support(executorType, sqlSet) && (AbstractSqlSet.SqlType.INSERT.equals(sqlSet.getSqlType()));
     }
 }

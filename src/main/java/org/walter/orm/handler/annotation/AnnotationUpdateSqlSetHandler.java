@@ -7,7 +7,9 @@ import org.walter.orm.annotation.Param;
 import org.walter.orm.annotation.Update;
 import org.walter.orm.core.model.AbstractSqlSet;
 import org.walter.orm.executor.operate.AbstractDataSourceSqlSetExecutor;
+import org.walter.orm.executor.operate.UpdateNamedParameterSqlSetExecutor;
 import org.walter.orm.parser.annotation.AbstractAnnotationSqlSetParser;
+import org.walter.orm.parser.annotation.AnnotationUpdateSqlSetParser;
 import org.walter.orm.throwable.SqlSetException;
 import org.walter.orm.util.ReflectionUtil;
 
@@ -18,16 +20,18 @@ import java.util.Map;
 @Component
 public class AnnotationUpdateSqlSetHandler extends AbstractAnnotationSqlSetHandler {
     @Autowired
-    private AnnotationDefaultSqlSetHandler annotationDefaultSqlSetHandler;
+    private AnnotationUpdateSqlSetParser parser;
+    @Autowired
+    private UpdateNamedParameterSqlSetExecutor executor;
 
     @Override
-    protected AbstractAnnotationSqlSetParser getSqlSetParser(Method method) {
-        return annotationDefaultSqlSetHandler.getSqlSetParser(method);
+    protected AbstractAnnotationSqlSetParser getSqlSetParser(Object... args) {
+        return parser;
     }
 
     @Override
-    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet) {
-        return annotationDefaultSqlSetHandler.getSqlSetExecutor(sqlSet);
+    protected AbstractDataSourceSqlSetExecutor getSqlSetExecutor(AbstractSqlSet sqlSet, Object... args) {
+        return executor;
     }
 
     @Override

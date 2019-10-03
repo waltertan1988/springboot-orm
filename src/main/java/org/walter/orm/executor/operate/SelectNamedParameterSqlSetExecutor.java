@@ -1,6 +1,7 @@
 package org.walter.orm.executor.operate;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -9,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.SelectSqlSet;
 import org.walter.orm.throwable.SqlSetException;
 import org.walter.orm.util.FreemarkerUtil;
 import org.walter.orm.util.ReflectionUtil;
@@ -25,13 +25,14 @@ import java.util.Map;
 public class SelectNamedParameterSqlSetExecutor extends AbstractIocDataSourceSqlSetExecutor {
     @Override
     public Object doExecute(AbstractSqlSet sqlSet, Object[] args) {
-        SelectSqlSet selectSqlSet = (SelectSqlSet) sqlSet;
-        Object param = null;
-        if(args != null){
-            param = args[0];
+        if(ArrayUtils.isEmpty(args) || args.length < 2){
+            throw new SqlSetException("Invalid args: %s", args);
         }
-        return doSelect(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), param,
-                selectSqlSet.getResultType(), selectSqlSet.getMultiReturnElementType());
+
+        Class<?> returnType = (Class<?>) args[0];
+        Class<?> mutliReturnElementType = (Class<?>) args[1];
+        Object param = (args.length > 2 ? args[2] : null);
+        return doSelect(getDataSource(sqlSet.getDataSource()), sqlSet.getStatement(), param, returnType, mutliReturnElementType);
     }
 
     private Object doSelect(DataSource dataSource, String statement, Object param, Class<?> returnType,
@@ -82,13 +83,13 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
     @Override
     public Boolean support(Class<?> executorType, Object...args) {
         AbstractSqlSet sqlSet = (AbstractSqlSet) args[0];
-        return super.support(executorType, sqlSet) && (sqlSet instanceof SelectSqlSet);
+        return super.support(executorType, sqlSet) && AbstractSqlSet.SqlType.SELECT.equals(sqlSet.getSqlType());
     }
 
     @Override
     protected void preExecute(AbstractSqlSet sqlSet, Object[] args) {
         super.preExecute(sqlSet, args);
-        if(args != null && args.length > 1){
+        if(args != null && args.length > 3){
             throw new SqlSetException("Method arg should be Void, Map or POJO");
         }
     }

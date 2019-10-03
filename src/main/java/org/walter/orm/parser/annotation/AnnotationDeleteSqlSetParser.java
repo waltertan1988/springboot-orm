@@ -4,7 +4,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.walter.orm.annotation.Delete;
 import org.walter.orm.core.model.AbstractSqlSet;
-import org.walter.orm.sqlset.DeleteSqlSet;
 
 import java.lang.reflect.Method;
 
@@ -17,7 +16,7 @@ public class AnnotationDeleteSqlSetParser extends AbstractAnnotationSqlSetParser
         Delete delete = AnnotationUtils.getAnnotation(method, Delete.class);
         String sqlStatement = delete.statement();
         String datasource = getDataSourceName(targetInterface, delete);
-        return new DeleteSqlSet(null, AbstractSqlSet.ConfigType.ANNOTATION, datasource, sqlStatement);
+        return new AbstractSqlSet(null, AbstractSqlSet.ConfigType.ANNOTATION, AbstractSqlSet.SqlType.DELETE, datasource, sqlStatement);
     }
 
     @Override

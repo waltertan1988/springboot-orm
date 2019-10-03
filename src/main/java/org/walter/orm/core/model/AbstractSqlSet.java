@@ -1,6 +1,7 @@
 package org.walter.orm.core.model;
 
 import lombok.*;
+import org.walter.orm.core.constant.Constants;
 
 import java.util.Objects;
 
@@ -8,10 +9,12 @@ import java.util.Objects;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class AbstractSqlSet {
+public class AbstractSqlSet {
     protected String id;
     @NonNull
     protected ConfigType configType;
+    @NonNull
+    protected SqlType sqlType;
     protected String dataSource;
     @NonNull
     protected String statement;
@@ -22,6 +25,15 @@ public abstract class AbstractSqlSet {
         XML(1),
         ANNOTATION(2);
         private int code;
+    }
+
+    @AllArgsConstructor
+    public enum SqlType {
+        SELECT(Constants.SqlSet.Select.class.getSimpleName().toLowerCase()),
+        DELETE(Constants.SqlSet.Delete.class.getSimpleName().toLowerCase()),
+        UPDATE(Constants.SqlSet.Update.class.getSimpleName().toLowerCase()),
+        INSERT(Constants.SqlSet.Insert.class.getSimpleName().toLowerCase());
+        private String code;
     }
 
     @Override
