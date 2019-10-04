@@ -8,7 +8,7 @@ import org.walter.orm.core.model.AbstractSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetHandler;
 import org.walter.orm.core.model.AbstractSqlSetParser;
 import org.walter.orm.executor.operate.AbstractIocDataSourceSqlSetExecutor;
-import org.walter.orm.parser.xml.operate.OperateXmlSqlSetParser;
+import org.walter.orm.parser.holder.SqlSetHolderParser;
 import org.walter.orm.throwable.SqlSetException;
 
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class DefaultSqlSetHolderSqlSetHandler extends AbstractSqlSetHandler {
     @Autowired
-    private OperateXmlSqlSetParser parser;
+    private SqlSetHolderParser parser;
     @Autowired
     private List<AbstractIocDataSourceSqlSetExecutor> executorList;
 

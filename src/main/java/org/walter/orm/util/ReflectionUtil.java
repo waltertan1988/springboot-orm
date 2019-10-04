@@ -1,11 +1,14 @@
 package org.walter.orm.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CaseFormat;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.util.Assert;
+import org.walter.orm.throwable.SqlSetException;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -72,5 +75,16 @@ public class ReflectionUtil {
         return beanMap.entrySet().stream()
                 .filter(entry -> !isNullValueFieldExcluded || entry.getValue() != null)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2)->v1));
+    }
+
+    public static <T> T toObject(Map<String, Object> source, Class<T> targetClass){
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonStr = mapper.writeValueAsString(source);
+            T result = mapper.readValue(jsonStr, targetClass);
+            return result;
+        } catch (IOException e) {
+            throw new SqlSetException(e);
+        }
     }
 }

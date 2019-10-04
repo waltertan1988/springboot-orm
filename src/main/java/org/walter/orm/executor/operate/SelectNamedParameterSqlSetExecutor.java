@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -54,6 +55,8 @@ public class SelectNamedParameterSqlSetExecutor extends AbstractIocDataSourceSql
             List<Map<String, Object>> mapList = namedParameterJdbcTemplate.queryForList(preparedSqlStatement, sqlParameterSource);
             if(Map.class.isAssignableFrom(multiReturnElementType)){
                 return mapList;
+            }else if(!ReflectionUtil.isCustomClass(multiReturnElementType)){
+                return mapList.stream().flatMap(map -> map.values().stream()).collect(Collectors.toList());
             }else{
                 List<Object> resultList = new ArrayList<>(mapList.size());
                 for (Map<String, Object> map : mapList) {

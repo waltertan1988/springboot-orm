@@ -11,10 +11,10 @@ import org.walter.orm.core.model.SqlSetHolder;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class XmlSqlSetParserTests {
+public class DbSqlSetParserTests {
 	@Test
-	public void testXmlOrmParser() {
-		SqlSetHolder.getSqlSetMapList().get(SqlSet.ConfigType.XML.ordinal()).values()
+	public void testDbOrmParser() {
+		SqlSetHolder.getSqlSetMapList().get(SqlSet.ConfigType.DB.ordinal()).values()
 				.forEach(sqlSet -> log.info("SqlSet: {}", sqlSet.toString()));
 	}
 }

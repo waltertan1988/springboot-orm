@@ -2,10 +2,20 @@ package org.walter.orm.core.constant;
 
 public class Constants {
     private Constants(){}
-    public static class OrmPropertiesKey {
-        private OrmPropertiesKey(){}
-        public static final String ORM_SQLSET_ANNOTATION_SCAN_PACKAGES = "orm.sqlset.annotation-scan-packages";
-        public static final String ORM_SQLSET_XML_LOCATION = "/**/*-SqlSet.xml";
+    public static class Infrastructure {
+        private Infrastructure(){}
+
+        public static class Db {
+            private Db(){}
+            public static final String DATA_SOURCE_NAME = "infrastructureDataSource";
+            public static final String SQLSET_TABLE_NAME = "base_sqlset";
+            public static final String QUERY_ALL_SQLSET_SQL = String.format("select * from %s", SQLSET_TABLE_NAME);
+        }
+
+        public static class Xml {
+            private Xml(){}
+            public static final String SQLSET_XML_LOCATION = "/**/*-SqlSet.xml";
+        }
     }
     public static class SqlSet {
         private SqlSet(){};

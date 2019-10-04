@@ -1,15 +1,15 @@
-package org.walter.orm.parser.xml.operate;
+package org.walter.orm.parser.holder;
 
 import org.springframework.stereotype.Component;
+import org.walter.orm.core.model.AbstractSqlSetParser;
 import org.walter.orm.core.model.SqlSet;
-import org.walter.orm.parser.xml.AbstractXmlSqlSetParser;
 import org.walter.orm.core.model.SqlSetHolder;
 import org.walter.orm.throwable.SqlSetException;
 
 import java.util.Map;
 
 @Component
-public class OperateXmlSqlSetParser extends AbstractXmlSqlSetParser {
+public class SqlSetHolderParser extends AbstractSqlSetParser {
     @Override
     public SqlSet parse(Object... args) {
         String id = (String) args[0];
@@ -21,6 +21,6 @@ public class OperateXmlSqlSetParser extends AbstractXmlSqlSetParser {
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return OperateXmlSqlSetParser.class.isAssignableFrom(clz);
+        return SqlSetHolderParser.class.isAssignableFrom(clz);
     }
 }

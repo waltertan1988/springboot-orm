@@ -1,35 +1,34 @@
-package org.walter.orm.handler.loading;
+package org.walter.orm.handler.db;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.core.model.AbstractSqlSetExecutor;
 import org.walter.orm.core.model.AbstractSqlSetHandler;
 import org.walter.orm.core.model.AbstractSqlSetParser;
+import org.walter.orm.core.model.SqlSet;
 import org.walter.orm.executor.loading.LoadingSqlSetExecutor;
-import org.walter.orm.parser.xml.loading.LoadingXmlSqlSetParser;
+import org.walter.orm.parser.db.DbSqlSetParser;
 import org.walter.orm.throwable.SqlSetException;
 
 @Component
-public class LoadingSqlSetHandler extends AbstractSqlSetHandler {
+public class DbSqlSetHandler extends AbstractSqlSetHandler {
     @Autowired
-    private LoadingXmlSqlSetParser loadingXmlSqlSetParser;
+    private DbSqlSetParser dbSqlSetParser;
     @Autowired
     private LoadingSqlSetExecutor loadingSqlSetExecutor;
 
     @Override
     protected void checkArgs(Object... args) {
-        if(ArrayUtils.isNotEmpty(args) && args.length == 2 && (args[0] instanceof Element) && (args[1] instanceof String)){
+        if(ArrayUtils.isNotEmpty(args) && args.length == 1 && (args[0] instanceof SqlSet)){
             return;
         }
-        throw new SqlSetException("Invalid args: ?", args);
+        throw new SqlSetException("Invalid args: %s", args);
     }
 
     @Override
     protected AbstractSqlSetParser getSqlSetParser(Object... args) {
-        return loadingXmlSqlSetParser;
+        return dbSqlSetParser;
     }
 
     @Override
@@ -39,6 +38,6 @@ public class LoadingSqlSetHandler extends AbstractSqlSetHandler {
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return LoadingSqlSetHandler.class.isAssignableFrom(clz);
+        return DbSqlSetHandler.class.isAssignableFrom(clz);
     }
 }

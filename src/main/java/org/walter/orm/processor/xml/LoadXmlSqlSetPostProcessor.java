@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.walter.orm.core.common.SupportChecker;
 import org.walter.orm.core.constant.Constants;
 import org.walter.orm.core.model.SqlSet;
-import org.walter.orm.handler.loading.LoadingSqlSetHandler;
+import org.walter.orm.handler.xml.XmlSqlSetHandler;
 import org.walter.orm.core.model.SqlSetHolder;
 import org.walter.orm.throwable.SqlSetException;
 
@@ -25,12 +25,12 @@ import java.io.IOException;
 @Component
 public class LoadXmlSqlSetPostProcessor implements BeanPostProcessor, SupportChecker {
     @Autowired
-    private LoadingSqlSetHandler loadingSqlSetHandler;
+    private XmlSqlSetHandler xmlSqlSetHandler;
     @Autowired
     private ConfigurableApplicationContext configurableApplicationContext;
 
     private final String SQLSET_XML_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
-            Constants.OrmPropertiesKey.ORM_SQLSET_XML_LOCATION;
+            Constants.Infrastructure.Xml.SQLSET_XML_LOCATION;
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -43,7 +43,7 @@ public class LoadXmlSqlSetPostProcessor implements BeanPostProcessor, SupportChe
                 Element sqlsetElement = new SAXReader().read(res.getFile()).getRootElement();
                 String dataSourceRefStr = sqlsetElement.attributeValue(Constants.SqlSet.DATA_SOURCE_REF);
                 final String DEFAULT_DATASOURCE_REF = StringUtils.isBlank(dataSourceRefStr) ? StringUtils.EMPTY : dataSourceRefStr;
-                sqlsetElement.elements().forEach(sqlElement -> loadingSqlSetHandler.handle(sqlElement, DEFAULT_DATASOURCE_REF));
+                sqlsetElement.elements().forEach(sqlElement -> xmlSqlSetHandler.handle(sqlElement, DEFAULT_DATASOURCE_REF));
             }
         }catch (IOException | DocumentException e){
             throw new SqlSetException(e);

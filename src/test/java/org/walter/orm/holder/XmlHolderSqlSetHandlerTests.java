@@ -1,4 +1,4 @@
-package org.walter.orm.xml;
+package org.walter.orm.holder;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Maps;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class SqlSetHolderSqlSetHandlerTests {
+public class XmlHolderSqlSetHandlerTests {
     @Autowired
     private DefaultSqlSetHolderSqlSetHandler defaultHandler;
     @Autowired

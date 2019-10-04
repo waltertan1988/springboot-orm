@@ -19,6 +19,14 @@ public class SqlSet {
     @NonNull
     protected String statement;
 
+    public void setSqlType(Object sqlType){
+        if(sqlType instanceof SqlType){
+            this.sqlType = (SqlType) sqlType;
+        }else if(sqlType instanceof String){
+            this.sqlType = SqlType.valueOf((String) ((String) sqlType).toUpperCase());
+        }
+    }
+
     @AllArgsConstructor
     public enum ConfigType {
         DB(0),

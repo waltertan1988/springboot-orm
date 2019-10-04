@@ -62,4 +62,10 @@
             <#if code??> and code = '${code}'</#if>
         ]]>
     </select>
+
+    <select id="override">
+        <![CDATA[
+            select * from department where name = :name
+        ]]>
+    </select>
 </sqlset>

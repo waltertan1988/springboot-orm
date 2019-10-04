@@ -1,14 +1,14 @@
-package org.walter.orm.parser.xml.loading;
+package org.walter.orm.parser.xml;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 import org.walter.orm.core.constant.Constants;
+import org.walter.orm.core.model.AbstractSqlSetParser;
 import org.walter.orm.core.model.SqlSet;
-import org.walter.orm.parser.xml.AbstractXmlSqlSetParser;
 
 @Component
-public class LoadingXmlSqlSetParser extends AbstractXmlSqlSetParser {
+public class XmlSqlSetParser extends AbstractSqlSetParser {
 
     private final String SQLSET_COMMENT_PATTERN = "<!--.*-->";
 
@@ -36,6 +36,6 @@ public class LoadingXmlSqlSetParser extends AbstractXmlSqlSetParser {
 
     @Override
     public Boolean support(Class<?> clz, Object... args) {
-        return LoadingXmlSqlSetParser.class.isAssignableFrom(clz);
+        return XmlSqlSetParser.class.isAssignableFrom(clz);
     }
 }
