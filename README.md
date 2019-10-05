@@ -45,6 +45,9 @@ create table `department` (
 ); 
 insert into `department` (`id`, `code`, `name`) values('1','D0001','开发部');
 insert into `department` (`id`, `code`, `name`) values('2','D0002','行政部');
+
+insert into `base_sqlset` (`id`, `sqlType`, `dataSource`, `statement`) values('listNameByCode','select','dataSource','select name from department where code like \'%${code}%\'');
+insert into `base_sqlset` (`id`, `sqlType`, `dataSource`, `statement`) values('override','select','dataSource','select * from department where code = :code');
 ```
 ### 使用接口注解映射
 本框架支持注解声明式接口来进行ORM映射。
@@ -316,8 +319,8 @@ public class Demo1RepositoryTests {
 }
 ```
 ### 使用XML配置映射
-除了注解声明式接口方式外，本框架还支持通过编写XML映射文件来进行ORM映射。
-XML映射文件必须放在classpath能访问到的路径之下，且文件名必须以-SqlSet.xml结尾，可以有多个不同名的XML映射文件。
+除了注解声明式接口方式外，本框架还支持通过编写XML映射文件来进行ORM映射。  
+XML映射文件必须放在classpath能访问到的路径之下，且文件名必须以-SqlSet.xml结尾，可以有多个不同名的XML映射文件。  
 映射文件的根元素\<sqlset\>中，可以用dataSourceRef指定默认数据源，其子元素\<select\>\<update\>\<insert\>\<delete\>中也可以用dataSourceRef自行覆盖。
 * 定义XML映射文件：
 ```xml
@@ -659,3 +662,6 @@ public class XmlHolderSqlSetHandlerTests {
 }
 ```
 ### 使用数据表配置映射
+除了使用XML文件来定义映射外，本框架还支持把映射信息定义在数据表BASE_SQLSET中。  
+值得注意的是，如果BASE_SQLSET中定义的id与XML中定义的重复，则BASE_SQLSET的映射信息会把XML中同ID的映射信息给覆盖掉。  
+数据表配置映射的使用方式，与XML映射方式一样，都可以用HolderSqlSetHandlerUtil工具类来执行ORM操作。
