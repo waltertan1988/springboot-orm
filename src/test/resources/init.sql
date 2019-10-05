@@ -1,9 +1,9 @@
 
-create table `base_sqlset` (
-	`id` varchar (255),
-	`sqlType` varchar (255),
-	`dataSource` varchar (255),
-	`statement` blob 
+create table `BASE_SQLSET` (
+	`id` varchar (255) COMMENT 'SqlSet的ID',
+	`sqlType` varchar (255) COMMENT 'select, update, insert, delete',
+	`dataSource` varchar (255) COMMENT '数据源的beanName',
+	`statement` blob COMMENT 'SQL语句'
 ); 
 insert into `base_sqlset` (`id`, `sqlType`, `dataSource`, `statement`) values('listNameByCode','select','dataSource','select name from department where code like \'%${code}%\'');
 insert into `base_sqlset` (`id`, `sqlType`, `dataSource`, `statement`) values('override','select','dataSource','select * from department where code = :code');
