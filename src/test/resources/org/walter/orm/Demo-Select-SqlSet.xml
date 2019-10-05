@@ -36,6 +36,18 @@
         ]]>
     </select>
 
+    <select id="getMapByIdEquals1">
+        <![CDATA[
+            select * from department where id = 1
+        ]]>
+    </select>
+
+    <select id="listMapByCodeLike00">
+        <![CDATA[
+            select * from department where code like '%00%'
+        ]]>
+    </select>
+
     <select id="listNameByCodeIn">
         <![CDATA[
             select name from department
@@ -61,7 +73,7 @@
         ]]>
     </select>
 
-    <select id="getObjectByObject">
+    <select id="getMapByObject">
         <![CDATA[
             select * from department
             where 1=1

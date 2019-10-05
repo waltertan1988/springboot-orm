@@ -6,6 +6,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.walter.orm.handler.annotation.AbstractAnnotationSqlSetHandler;
+import org.walter.orm.util.ApplicationContextHolder;
 
 import java.lang.annotation.*;
 import java.lang.reflect.InvocationHandler;
@@ -52,6 +53,7 @@ public class MethodProxyFactory implements FactoryBean, InvocationHandler, Appli
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        ApplicationContextHolder.applicationContext = applicationContext;
     }
 
     @Target(ElementType.FIELD)

@@ -34,7 +34,7 @@ public interface Demo1Repository {
             "<#if id??> and id = :id</#if>" +
             "<#if code??> and code = '${code}'</#if>",
             dataSourceRef = "dataSource")
-    Demo1Domain getObjectByObject(Demo1Domain param);
+    Map<String, Object> getMapByObject(Demo1Domain param);
 
     @Select(value = "select * from department where 1=1" +
             "<#if id??> and id = :id</#if>" +

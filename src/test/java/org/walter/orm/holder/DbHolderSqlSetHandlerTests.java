@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.walter.orm.handler.holder.DefaultSqlSetHolderSqlSetHandler;
 import org.walter.orm.handler.holder.UpdateSqlSetHolderSqlSetHandler;
+import org.walter.orm.util.HolderSqlSetHandlerUtil;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,12 +26,14 @@ public class DbHolderSqlSetHandlerTests {
     @Test
     public void testListNameByCode(){
         Map<String, Object> condition = Maps.newHashMap("code", "00");
-        log.debug("result: {}", defaultHandler.handle("listNameByCode", Collection.class, String.class, condition));
+        Collection<String> collection = HolderSqlSetHandlerUtil.selectMany("listNameByCode", String.class, condition);
+        log.debug("result: {}", collection);
     }
 
     @Test
     public void testOverride(){
         Map<String, Object> condition = Maps.newHashMap("code", "D0001");
-        log.debug("result: {}", defaultHandler.handle("override", Map.class, null, condition));
+        Map<String, Object> result = HolderSqlSetHandlerUtil.selectOne("override", condition);
+        log.debug("result: {}", result);
     }
 }

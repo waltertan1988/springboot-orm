@@ -32,19 +32,25 @@ public class Demo1RepositoryTests {
     }
 
     @Test
-    public void testListNameByCodeIn(){
-        Map<String, Object> params = new HashMap<>();
-        params.put("codes", Sets.newHashSet("D0001", "D0002"));
-        List<String> results = demo1Repository.listNameByCodeIn(params);
-        log.debug("result: {}", results.toString());
-    }
-
-    @Test
     public void testListObjectByMap(){
         Map<String, Object> params = new HashMap<>();
         params.put("code", "%D000%");
         List<?> results = demo1Repository.listObjectByMap(params);
         log.debug("result: {}", results.toString());
+    }
+
+    @Test
+    public void testGetObjectByMap(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("code", "D0001");
+        Demo1Domain result = demo1Repository.getObjectByMap(params);
+        log.debug("result: {}", result.toString());
+    }
+
+    @Test
+    public void testGetMayByObject(){
+        Map<String, Object> result = demo1Repository.getMapByObject(new Demo1Domain(2L, null, null));
+        log.debug("result: {}", result.toString());
     }
 
     @Test
@@ -56,17 +62,11 @@ public class Demo1RepositoryTests {
     }
 
     @Test
-    public void testGetObjectByObject(){
-        Demo1Domain result = demo1Repository.getObjectByObject(new Demo1Domain(2L, null, null));
-        log.debug("result: {}", result.toString());
-    }
-
-    @Test
-    public void testGetObjectByMap(){
+    public void testListNameByCodeIn(){
         Map<String, Object> params = new HashMap<>();
-        params.put("code", "D0001");
-        Demo1Domain result = demo1Repository.getObjectByMap(params);
-        log.debug("result: {}", result.toString());
+        params.put("codes", Sets.newHashSet("D0001", "D0002"));
+        List<String> results = demo1Repository.listNameByCodeIn(params);
+        log.debug("result: {}", results.toString());
     }
 
     @Test
