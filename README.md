@@ -665,3 +665,6 @@ public class XmlHolderSqlSetHandlerTests {
 除了使用XML文件来定义映射外，本框架还支持把映射信息定义在数据表BASE_SQLSET中。  
 值得注意的是，如果BASE_SQLSET中定义的id与XML中定义的重复，则BASE_SQLSET的映射信息会把XML中同ID的映射信息给覆盖掉。  
 数据表配置映射的使用方式，与XML映射方式一样，都可以用HolderSqlSetHandlerUtil工具类来执行ORM操作。
+
+## 更多
+更多使用范例，请参看源码中src/test/*下的测试用例。
