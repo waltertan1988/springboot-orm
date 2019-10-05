@@ -36,8 +36,20 @@ create table `BASE_SQLSET` (
 	`statement` blob COMMENT 'SQL语句'
 ); 
 ```
+* 为便于测试，在业务数据源中定义数据表DEPARTMENT，并添加一些数据:
+```sql
+create table `department` (
+	`id` bigint (20),
+	`code` varchar (255),
+	`name` varchar (255)
+); 
+insert into `department` (`id`, `code`, `name`) values('1','D0001','开发部');
+insert into `department` (`id`, `code`, `name`) values('2','D0002','行政部');
+```
 ### 使用接口注解映射
-* 相关注解说明：
+本框架支持注解声明式接口来进行ORM映射。
+
+* 注解说明：
 
 @SqlSet - 声明一个接口为SqlSet类型的接口
 
@@ -304,5 +316,346 @@ public class Demo1RepositoryTests {
 }
 ```
 ### 使用XML配置映射
+除了注解声明式接口方式外，本框架还支持通过编写XML映射文件来进行ORM映射。
+XML映射文件必须放在classpath能访问到的路径之下，且文件名必须以-SqlSet.xml结尾，可以有多个不同名的XML映射文件。
+映射文件的根元素\<sqlset\>中，可以用dataSourceRef指定默认数据源，其子元素\<select\>\<update\>\<insert\>\<delete\>中也可以用dataSourceRef自行覆盖。
+* 定义XML映射文件：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlset xmlns="http://www.waltertan.org/ORMSchema"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.org/ORMSchema OrmSchema.xsd"
+     dataSourceRef="dataSource">
 
+    <select id="listAllDepartmentByCodeLike">
+        <![CDATA[
+            select * from department where code like '%${code}%'
+        ]]>
+    </select>
+
+    <select id="currentDateTime">
+        <![CDATA[
+            select now()
+        ]]>
+    </select>
+
+    <select id="getDepartmentName">
+        <![CDATA[
+            select name from department where id = :id and code like '%${code}%'
+        ]]>
+    </select>
+
+    <select id="countAllDepartment">
+        <![CDATA[
+            select count(*) from department
+        ]]>
+    </select>
+
+    <select id="listMapByObject">
+        <![CDATA[
+            select * from department
+            where 1=1
+            <#if name??> and name like '%${name}%'</#if>
+            <#if code??> and code like :code</#if>
+        ]]>
+    </select>
+
+    <select id="getMapByIdEquals1">
+        <![CDATA[
+            select * from department where id = 1
+        ]]>
+    </select>
+
+    <select id="listMapByCodeLike00">
+        <![CDATA[
+            select * from department where code like '%00%'
+        ]]>
+    </select>
+
+    <select id="listNameByCodeIn">
+        <![CDATA[
+            select name from department
+            where 1=1
+            and code in (:codes)
+        ]]>
+    </select>
+
+    <select id="listObjectByMap">
+        <![CDATA[
+            select * from department
+            where 1=1
+            <#if name??> and name like '%${name}%'</#if>
+            <#if code??> and code like :code</#if>
+        ]]>
+    </select>
+
+    <select id="listMapByCodeIn">
+        <![CDATA[
+            select * from department
+            where 1=1
+            and code in (:codes)
+        ]]>
+    </select>
+
+    <select id="getMapByObject">
+        <![CDATA[
+            select * from department
+            where 1=1
+            <#if id??> and id = :id</#if>
+            <#if code??> and code = '${code}'</#if>
+        ]]>
+    </select>
+
+    <select id="getObjectByMap">
+        <![CDATA[
+            select * from department
+            where 1=1
+            <#if id??> and id = :id</#if>
+            <#if code??> and code = '${code}'</#if>
+        ]]>
+    </select>
+
+    <select id="override">
+        <![CDATA[
+            select * from department where name = :name
+        ]]>
+    </select>
+</sqlset>
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlset xmlns="http://www.waltertan.org/ORMSchema"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.waltertan.org/ORMSchema OrmSchema.xsd">
+
+    <insert id="saveDepartment" dataSourceRef="dataSource">
+        <![CDATA[
+            insert into department(code, name) values (:code, :name)
+        ]]>
+    </insert>
+
+    <delete id="deleteDepartmentByIdGt" dataSourceRef="dataSource">
+        <![CDATA[
+            delete department where id > :id
+        ]]>
+    </delete>
+
+    <update id="updateObjectByObjectWithNull" dataSourceRef="dataSource">
+        <![CDATA[
+            update department set
+                name = <#if name == '_NULL'>null<#else>:name</#if>
+            where name <#if _name?? && _name == '_NULL'>is null<#else>=:_name</#if>
+        ]]>
+    </update>
+
+    <insert id="saveObject" dataSourceRef="dataSource">
+        <![CDATA[
+            insert into department(code, name) values (:code, :name)
+        ]]>
+    </insert>
+
+    <insert id="saveMap" dataSourceRef="dataSource">
+        <![CDATA[
+            insert into department(code, name) values (:code, :name)
+        ]]>
+    </insert>
+
+    <delete id="deleteByObject" dataSourceRef="dataSource">
+        <![CDATA[
+            delete from department where name like '%${name}%'
+        ]]>
+    </delete>
+
+    <delete id="deleteByMap" dataSourceRef="dataSource">
+        <![CDATA[
+            delete from department where id > :id
+        ]]>
+    </delete>
+
+    <update id="updateObjectByObject" dataSourceRef="dataSource">
+        <![CDATA[
+            update department set code = :code where code = :_code
+        ]]>
+    </update>
+</sqlset>
+```
+
+* 结合HolderSqlSetHandlerUtil来执行ORM操作：
+```java
+@Slf4j
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class XmlHolderSqlSetHandlerTests {
+    @Test
+    public void testCurrentDateTime(){
+        Date date = HolderSqlSetHandlerUtil.selectOne("currentDateTime", Date.class);
+        log.debug("result: {}", date);
+    }
+
+    @Test
+    public void testCountAllDepartment(){
+        int count = HolderSqlSetHandlerUtil.selectOne("countAllDepartment", Integer.class);
+        log.debug("result: {}", count);
+    }
+
+    @Test
+    public void testGetDepartmentName(){
+        Demo1Domain condition = new Demo1Domain();
+        condition.setId(1L);
+        condition.setCode("00");
+        String name = HolderSqlSetHandlerUtil.selectOne("getDepartmentName", String.class, condition);
+        log.debug("result: {}", name);
+    }
+
+    @Test
+    public void testListAllDepartmentByCodeLike(){
+        Map<String, Object> params = Maps.newHashMap("code", "0");
+        Collection<Demo1Domain> collection = HolderSqlSetHandlerUtil.selectMany("listAllDepartmentByCodeLike",
+                Demo1Domain.class, params);
+        log.debug("result: {}", collection);
+    }
+
+    @Test
+    public void testListMapByObject(){
+        Demo1Domain condition = new Demo1Domain(null, "D0001", null);
+        Collection<Map<String, Object>> collection = HolderSqlSetHandlerUtil.selectMany("listMapByObject", condition);
+        log.debug("result: {}", collection);
+    }
+
+    @Test
+    public void testListObjectByMap(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("code", "%D000%");
+        Collection<Demo1Domain> collection = HolderSqlSetHandlerUtil.selectMany("listObjectByMap", Demo1Domain.class, condition);
+        log.debug("result: {}", collection);
+    }
+
+    @Test
+    public void testGetMapByObject(){
+        Demo1Domain condition = new Demo1Domain(2L, null, null);
+        Map<String, Object> result = HolderSqlSetHandlerUtil.selectOne("getMapByObject", condition);
+        log.debug("result: {}", result);
+    }
+
+    @Test
+    public void testGetMapByMap(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("id", 1L);
+        Map<String, Object> result = HolderSqlSetHandlerUtil.selectOne("getMapByObject", condition);
+        log.debug("result: {}", result);
+    }
+
+    @Test
+    public void testGetObjectByMap(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("code", "D0001");
+        Demo1Domain result = HolderSqlSetHandlerUtil.selectOne("getObjectByMap", Demo1Domain.class, condition);
+        log.debug("result: {}", result);
+    }
+
+    @Test
+    public void testListNameByCodeIn(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codes", Sets.newHashSet("D0001", "D0002"));
+        Collection<String> collection = HolderSqlSetHandlerUtil.selectMany("listNameByCodeIn", String.class, condition);
+        log.debug("result: {}", collection);
+    }
+
+    @Test
+    public void testListMapByCodeIn(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codes", Sets.newHashSet("D0001", "D0002"));
+        Collection<Map<String, Object>> collection = HolderSqlSetHandlerUtil.selectMany("listMapByCodeIn", condition);
+        log.debug("result: {}", collection);
+    }
+
+    @Test
+    public void testGetMapByIdEquals1(){
+        Map<String, Object> result = HolderSqlSetHandlerUtil.selectOne("getMapByIdEquals1");
+        log.debug("result: {}", result);
+    }
+
+    @Test
+    public void testListMapByCodeLike00(){
+        Collection<Map<String, Object>> collection = HolderSqlSetHandlerUtil.selectMany("listMapByCodeLike00");
+        log.debug("result: {}", collection);
+    }
+
+    @Test
+    public void testSaveObject(){
+        String keyField = "id";
+        Demo1Domain domain = new Demo1Domain(null, "D0004","财务部");
+        Integer count = HolderSqlSetHandlerUtil.save("saveObject", domain, keyField);
+        Assert.assertTrue(1 == count);
+        log.debug(domain.toString());
+    }
+
+    @Test
+    public void testSaveObjectWithoutKeyField(){
+        Demo1Domain domain = new Demo1Domain(null, "D0004","人事部");
+        Integer count = HolderSqlSetHandlerUtil.save("saveObject", domain);
+        Assert.assertTrue(1 == count);
+        log.debug(domain.toString());
+    }
+
+    @Test
+    public void testSaveMap(){
+        String keyField = "id";
+        Map<String, Object> params = new HashMap<>();
+        params.put("code", "D0003");
+        params.put("name", "财务部");
+        Integer count = HolderSqlSetHandlerUtil.save("saveMap", params, keyField);
+        Assert.assertTrue(1 == count);
+        log.debug(params.toString());
+    }
+
+    @Test
+    public void testSaveMapWithoutKeyField(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("code", "D0003");
+        params.put("name", "人事部");
+        Integer count = HolderSqlSetHandlerUtil.save("saveMap", params);
+        Assert.assertTrue(1 == count);
+        log.debug(params.toString());
+    }
+
+    @Test
+    public void testDeleteByObject(){
+        Demo1Domain domain = new Demo1Domain(null, null,"财务部");
+        int count = HolderSqlSetHandlerUtil.delete("deleteByObject", domain);
+        log.debug("count: {}", count);
+    }
+
+    @Test
+    public void testDeleteByMap(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("id", 2L);
+        int count = HolderSqlSetHandlerUtil.delete("deleteByMap", condition);
+        log.debug("count: {}", count);
+    }
+
+    @Test
+    public void testUpdateObjectByObject(){
+        Demo1Domain newValueObject = new Demo1Domain(null, "D0005", null);
+        Demo1Domain condition = new Demo1Domain(null, "D0004", null);
+        Integer count = HolderSqlSetHandlerUtil.update("updateObjectByObject", newValueObject, condition);
+        log.debug("count: {}", count);
+    }
+
+    @Test
+    public void testUpdateObjectByObjectWithNull(){
+        Demo1Domain newValueObject = new Demo1Domain(null, null, "XXX");
+        Demo1Domain condition = new Demo1Domain(null, null, "_NULL");
+        Integer count = HolderSqlSetHandlerUtil.update("updateObjectByObjectWithNull", newValueObject, condition);
+        log.debug("count: {}", count);
+    }
+
+    @Test
+    public void testUpdateObjectByObjectWithNotNull(){
+        Demo1Domain newValueObject = new Demo1Domain(null, null, "_NULL");
+        Demo1Domain condition = new Demo1Domain(null, null, "XXX");
+        Integer count = HolderSqlSetHandlerUtil.update("updateObjectByObjectWithNull", newValueObject, condition);
+        log.debug("count: {}", count);
+    }
+}
+```
 ### 使用数据表配置映射
