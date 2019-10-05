@@ -13,11 +13,22 @@ public interface Demo1Repository {
             dataSourceRef = "dataSource")
     List<?> listMapByObject(Object param);
 
+    @Select(statement = "select name from department " +
+            "where 1=1 " +
+            "and code in (:codes)",
+            dataSourceRef = "dataSource", multiReturnElementType = String.class)
+    List<String> listNameByCodeIn(Map<String, Object> params);
+
     @Select(value = "select * from department where 1=1" +
             "<#if name??> and name like '%${name}%'</#if>" +
             "<#if code??> and code like :code</#if>",
             dataSourceRef = "dataSource", multiReturnElementType = Demo1Domain.class)
-    List<?> listObjectByMap(Map<String, Object> params);
+    List<Demo1Domain> listObjectByMap(Map<String, Object> params);
+
+    @Select(statement = "select * from department" +
+            "where 1=1 " +
+            "and code in (:codes)", dataSourceRef = "dataSource")
+    List<?> listMapByCodeIn(Map<String, Object> params);
 
     @Select(value = "select * from department where 1=1" +
             "<#if id??> and id = :id</#if>" +

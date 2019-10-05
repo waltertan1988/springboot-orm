@@ -1,5 +1,6 @@
 package org.walter.orm.holder;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Maps;
 import org.junit.Assert;
@@ -57,10 +58,24 @@ public class XmlHolderSqlSetHandlerTests {
     }
 
     @Test
+    public void testListNameByCodeIn(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codes", Sets.newHashSet("D0001", "D0002"));
+        log.debug("result: {}", defaultHandler.handle("listNameByCodeIn", Collection.class, String.class, condition));
+    }
+
+    @Test
     public void testListObjectByMap(){
         Map<String, Object> condition = new HashMap<>();
         condition.put("code", "%D000%");
         log.debug("result: {}", defaultHandler.handle("listObjectByMap", Collection.class, Map.class, condition));
+    }
+
+    @Test
+    public void testListMapByCodeIn(){
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("codes", Sets.newHashSet("D0001", "D0002"));
+        log.debug("result: {}", defaultHandler.handle("listMapByCodeIn", Collection.class, Map.class, condition));
     }
 
     @Test

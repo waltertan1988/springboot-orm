@@ -36,12 +36,28 @@
         ]]>
     </select>
 
+    <select id="listNameByCodeIn">
+        <![CDATA[
+            select name from department
+            where 1=1
+            and code in (:codes)
+        ]]>
+    </select>
+
     <select id="listObjectByMap">
         <![CDATA[
             select * from department
             where 1=1
             <#if name??> and name like '%${name}%'</#if>
             <#if code??> and code like :code</#if>
+        ]]>
+    </select>
+
+    <select id="listMapByCodeIn">
+        <![CDATA[
+            select * from department
+            where 1=1
+            and code in (:codes)
         ]]>
     </select>
 

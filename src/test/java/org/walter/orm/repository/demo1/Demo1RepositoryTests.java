@@ -1,5 +1,6 @@
 package org.walter.orm.repository.demo1;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,7 +28,15 @@ public class Demo1RepositoryTests {
     @Test
     public void testListMapByObject(){
         List<?> results = demo1Repository.listMapByObject(new Demo1Domain(null, "D0001", null));
-        log.debug(results.toString());
+        log.debug("result: {}", results.toString());
+    }
+
+    @Test
+    public void testListNameByCodeIn(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("codes", Sets.newHashSet("D0001", "D0002"));
+        List<String> results = demo1Repository.listNameByCodeIn(params);
+        log.debug("result: {}", results.toString());
     }
 
     @Test
@@ -35,13 +44,21 @@ public class Demo1RepositoryTests {
         Map<String, Object> params = new HashMap<>();
         params.put("code", "%D000%");
         List<?> results = demo1Repository.listObjectByMap(params);
-        log.debug(results.toString());
+        log.debug("result: {}", results.toString());
+    }
+
+    @Test
+    public void testListMapByCodeIn(){
+        Map<String, Object> params = new HashMap<>();
+        params.put("codes", Sets.newHashSet("D0001", "D0002"));
+        List<?> results = demo1Repository.listMapByCodeIn(params);
+        log.debug("result: {}", results.toString());
     }
 
     @Test
     public void testGetObjectByObject(){
         Demo1Domain result = demo1Repository.getObjectByObject(new Demo1Domain(2L, null, null));
-        log.debug(result.toString());
+        log.debug("result: {}", result.toString());
     }
 
     @Test
@@ -49,7 +66,7 @@ public class Demo1RepositoryTests {
         Map<String, Object> params = new HashMap<>();
         params.put("code", "D0001");
         Demo1Domain result = demo1Repository.getObjectByMap(params);
-        log.debug(result.toString());
+        log.debug("result: {}", result.toString());
     }
 
     @Test
@@ -57,7 +74,7 @@ public class Demo1RepositoryTests {
         Demo1Domain domain = new Demo1Domain(null, "D0004","财务部");
         long count = demo1Repository.saveObject(domain);
         Assert.assertTrue(1 == count);
-        log.debug(domain.toString());
+        log.debug("result: {}", domain.toString());
     }
 
     @Test
@@ -67,7 +84,7 @@ public class Demo1RepositoryTests {
         params.put("name", "财务部");
         long count = demo1Repository.saveMap(params);
         Assert.assertTrue(1 == count);
-        log.debug(params.toString());
+        log.debug("result: {}", params.toString());
     }
 
     @Test
