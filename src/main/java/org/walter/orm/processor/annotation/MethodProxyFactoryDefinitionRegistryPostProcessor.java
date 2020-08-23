@@ -13,6 +13,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.walter.orm.annotation.SqlSet;
+import org.walter.orm.processor.annotation.proxy.JdkMethodProxyFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -23,14 +24,16 @@ import java.util.Set;
 public class MethodProxyFactoryDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor {
     @Setter
     private Set<String> scanPackages = Sets.newHashSet();
+    @Setter
+    private Class<? extends AbstractMethodProxyFactory> methodProxyFactoryClz = JdkMethodProxyFactory.class;
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         this.listSqlSetInterfaces().forEach(interfaceClz -> {
             // 构造SqlSet接口对应的BeanDefinition
-            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(MethodProxyFactory.class);
-            for (Field field : MethodProxyFactory.class.getDeclaredFields()) {
-                if(field.isAnnotationPresent(MethodProxyFactory.TargetInterface.class)){
+            BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(methodProxyFactoryClz);
+            for (Field field : AbstractMethodProxyFactory.class.getDeclaredFields()) {
+                if(field.isAnnotationPresent(TargetInterface.class)){
                     beanDefinitionBuilder.addPropertyValue(field.getName(), interfaceClz);
                 }
             }

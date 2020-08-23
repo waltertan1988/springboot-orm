@@ -6,8 +6,8 @@
     <!--框架数据源，alias固定为infrastructureDataSource，用于数据表配置方式来进行ORM映射-->
     <alias alias="infrastructureDataSource" name="dataSource"/>
 
-    <!--接口注解方式来进行ORM映射时自动扫描的package列表-->
     <bean class="org.walter.orm.processor.annotation.MethodProxyFactoryDefinitionRegistryPostProcessor">
+        <!--接口注解方式来进行ORM映射时自动扫描的package列表-->
         <property name="scanPackages">
             <set>
                 <value>org.walter.orm.processor.db.repository</value>
@@ -15,5 +15,8 @@
                 <value>org.walter.orm.repository</value>
             </set>
         </property>
+
+        <!--动态代理的生成方式，默认使用Jdk动态代理工厂org.walter.orm.processor.annotation.proxy.JdkMethodProxyFactory-->
+<!--        <property name="methodProxyFactoryClz" value="org.walter.orm.processor.annotation.proxy.JdkMethodProxyFactory"/>-->
     </bean>
 </beans>

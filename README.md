@@ -15,8 +15,8 @@
     <!--框架数据源，alias固定为infrastructureDataSource，用于数据表配置方式来进行ORM映射-->
     <alias alias="infrastructureDataSource" name="框架数据源的beanName"/>
 
-    <!--接口注解方式来进行ORM映射时自动扫描的package列表-->
     <bean class="org.walter.orm.processor.annotation.MethodProxyFactoryDefinitionRegistryPostProcessor">
+        <!--接口注解方式来进行ORM映射时自动扫描的package列表-->
         <property name="scanPackages">
             <set>
                 <value>扫描的包1</value>
@@ -24,6 +24,9 @@
                 <value>扫描的包N</value>
             </set>
         </property>
+
+        <!--动态代理的生成方式，默认使用Jdk动态代理工厂org.walter.orm.processor.annotation.proxy.JdkMethodProxyFactory-->
+        <property name="methodProxyFactoryClz" value="org.walter.orm.processor.annotation.proxy.JdkMethodProxyFactory"/>
     </bean>
 </beans>
 ```
@@ -34,7 +37,7 @@ create table `BASE_SQLSET` (
 	`sqlType` varchar (255) COMMENT 'select, update, insert, delete',
 	`dataSource` varchar (255) COMMENT '数据源的beanName',
 	`statement` blob COMMENT 'SQL语句'
-); 
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4; 
 ```
 * 为便于测试，在业务数据源中定义数据表DEPARTMENT，并添加一些数据:
 ```sql
