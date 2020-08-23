@@ -1,18 +1,9 @@
 package org.walter.orm.processor.annotation.proxy;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.walter.orm.handler.annotation.AbstractAnnotationSqlSetHandler;
 import org.walter.orm.processor.annotation.AbstractMethodProxyFactory;
-import org.walter.orm.util.ApplicationContextHolder;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-@Slf4j
 public class JdkMethodProxyFactory extends AbstractMethodProxyFactory {
 
     @Override

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,8 @@ public class DemoRepositoryTests {
 
     @Test
     public void testGetCurrentDateTime(){
-        log.debug(demoRepository.getCurrentDateTime().toString());
+        Date currentDateTime = demoRepository.getCurrentDateTime();
+        log.debug(currentDateTime.toString());
     }
 
     @Test

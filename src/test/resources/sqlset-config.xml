@@ -17,6 +17,6 @@
         </property>
 
         <!--动态代理的生成方式，默认使用Jdk动态代理工厂org.walter.orm.processor.annotation.proxy.JdkMethodProxyFactory-->
-<!--        <property name="methodProxyFactoryClz" value="org.walter.orm.processor.annotation.proxy.JdkMethodProxyFactory"/>-->
+<!--        <property name="methodProxyFactoryClz" value="org.walter.orm.processor.annotation.proxy.JavassistMethodProxyFactory"/>-->
     </bean>
 </beans>
