@@ -40,8 +40,6 @@ public class JavassistMethodProxyFactory extends AbstractMethodProxyFactory {
             ctClassProxy.addMethod(ctMethod);
         }
 
-        ctClassProxy.writeFile("D:/");
-
         // 创建并返回代理对象
         ApplicationContextAware proxyObject = (ApplicationContextAware) ctClassProxy.toClass().newInstance();
         proxyObject.setApplicationContext(super.applicationContext);
@@ -67,8 +65,9 @@ public class JavassistMethodProxyFactory extends AbstractMethodProxyFactory {
                         "%s handlers = new %s(applicationContext.getBeansOfType(%s.class).values());" +
                         "for (int i=0; i<handlers.size(); i++) {" +
                             "%s h = (%s) handlers.get(i);" +
-                            "if(h.support(h.getClass(), new Object[]{method})){" +
-                                "result = h.handle(%s.class, method, $$);" +
+                            "Boolean support = h.support(h.getClass(), new Object[]{method});" +
+                            "if(support.booleanValue()){" +
+                                "result = h.handle(new Object[]{%s.class, method, $args});" +
                                 "break;" +
                             "}" +
                         "}" +
