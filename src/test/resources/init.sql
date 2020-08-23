@@ -4,7 +4,7 @@ create table `BASE_SQLSET` (
 	`sqlType` varchar (255) COMMENT 'select, update, insert, delete',
 	`dataSource` varchar (255) COMMENT '数据源的beanName',
 	`statement` blob COMMENT 'SQL语句'
-); 
+) ENGINE=INNODB DEFAULT CHARSET=utf8mb4;
 insert into `base_sqlset` (`id`, `sqlType`, `dataSource`, `statement`) values('listNameByCode','select','dataSource','select name from department where code like \'%${code}%\'');
 insert into `base_sqlset` (`id`, `sqlType`, `dataSource`, `statement`) values('override','select','dataSource','select * from department where code = :code');
 
